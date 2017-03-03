@@ -149,6 +149,22 @@ public class TAController {
             
         }
     
+    public void clearWorkspace(){
+        TAData data = (TAData)app.getDataComponent();
+        data.getTeachingAssistants().clear();         
+    }
+    
+    public void clearOfficeHours(){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        for(String key : workspace.officeHoursGridTACellLabels.keySet()){
+            Label label = workspace.officeHoursGridTACellLabels.get(key);
+            if(!label.getText().isEmpty()){
+                label.setText("");
+            }
+        }
+         
+    }
+    
     public void updateCellPane(String newName, String oldName){
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         for (Label label : workspace.officeHoursGridTACellLabels.values()){

@@ -57,6 +57,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
     TextField nameTextField;
     TextField emailTextField;
     Button addButton;
+    Button clearButton;
 
     // THE HEADER ON THE RIGHT
     HBox officeHoursHeaderBox;
@@ -119,13 +120,18 @@ public class TAWorkspace extends AppWorkspaceComponent {
         nameTextField.setPromptText(namePromptText);
         emailTextField.setPromptText(emailPromptText);
         addButton = new Button(addButtonText);
+        clearButton = new Button("Clear");
         addBox = new HBox();
-        nameTextField.prefWidthProperty().bind(addBox.widthProperty().multiply(.4));
-        emailTextField.prefWidthProperty().bind(addBox.widthProperty().multiply(.4));
+        nameTextField.prefWidthProperty().bind(addBox.widthProperty().multiply(.3));
+        emailTextField.prefWidthProperty().bind(addBox.widthProperty().multiply(.3));
         addButton.prefWidthProperty().bind(addBox.widthProperty().multiply(.2));
+        clearButton.prefWidthProperty().bind(addBox.widthProperty().multiply(.2));
+        clearButton.prefHeightProperty().bind(addBox.heightProperty().multiply(1));
+        clearButton.setStyle("-fx-font-size: 14pt;-fx-font-weight:bold;");
         addBox.getChildren().add(nameTextField);
         addBox.getChildren().add(emailTextField);
         addBox.getChildren().add(addButton);
+        addBox.getChildren().add(clearButton);
 
         // INIT THE HEADER ON THE RIGHT
         officeHoursHeaderBox = new HBox();
@@ -176,6 +182,12 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addButton.setOnAction(e -> {
             controller.handleAddTA();
         });
+        clearButton.setOnAction(e -> {
+            controller.clearWorkspace();
+            controller.clearOfficeHours();
+            buttonToAddTA();
+            nameTextField.requestFocus();
+        });
 
         taTable.setFocusTraversable(true);
         taTable.setOnKeyPressed(e -> {
@@ -187,6 +199,14 @@ public class TAWorkspace extends AppWorkspaceComponent {
         });
     }
     
+    /**
+     * The following method change the text of the add button from "Add TA" to
+     * "Update TA"
+     */
+    private void buttonToAddTA(){
+        if(addButton.getText().equals("Update TA"));
+            addButton.setText("Add TA");
+    }
     
     // WE'LL PROVIDE AN ACCESSOR METHOD FOR EACH VISIBLE COMPONENT
     // IN CASE A CONTROLLER OR STYLE CLASS NEEDS TO CHANGE IT
