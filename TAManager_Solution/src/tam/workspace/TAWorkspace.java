@@ -4,10 +4,12 @@ import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.collections.FXCollections;
 import tam.TAManagerApp;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
@@ -58,10 +60,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
     TextField emailTextField;
     Button addButton;
     Button clearButton;
+    Button filterButton;
 
     // THE HEADER ON THE RIGHT
     HBox officeHoursHeaderBox;
     Label officeHoursHeaderLabel;
+    Label starTimeLabel;
+    Label endTimeLabel;
     
     // THE OFFICE HOURS GRID
     GridPane officeHoursGridPane;
@@ -73,6 +78,59 @@ public class TAWorkspace extends AppWorkspaceComponent {
     HashMap<String, Label> officeHoursGridTimeCellLabels;
     HashMap<String, Pane> officeHoursGridTACellPanes;
     HashMap<String, Label> officeHoursGridTACellLabels;
+    ComboBox startTime;
+    ComboBox endTime;
+    ObservableList<String> TAHours = 
+    FXCollections.observableArrayList(   
+        "12:00am",
+        "12:30am",
+        "1:00am",    
+        "1:30am",    
+        "2:00am",
+        "2:30am",    
+        "3:00am",    
+        "3:30am", 
+        "4:00am",    
+        "4:30am",    
+        "5:00am", 
+        "5:30am",    
+        "6:00am",    
+        "6:30am",
+        "7:00am",    
+        "7:30am", 
+        "8:00am",    
+        "8:30am",
+        "9:00am",
+        "9:30am",
+        "10:00am",
+        "10:30am",
+        "11:00am",
+        "11:30am",
+        "12:00pm",
+        "12:30pm",
+        "1:00pm",
+        "1:30pm",
+        "2:00pm",
+        "2:30pm",
+        "3:00pm",
+        "3:30pm",
+        "4:00pm",
+        "4:30pm",
+        "5:00pm",
+        "5:30pm",
+        "6:00pm",
+        "6:30pm",
+        "7:00pm",
+        "7:30pm",
+        "8:00pm",
+        "8:30pm",
+        "9:00pm",
+        "9:30pm",
+        "10:00pm",
+        "10:30pm",
+        "11:00pm",
+        "11:30pm"
+    );
 
     /**
      * The contstructor initializes the user interface, except for
@@ -134,10 +192,18 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addBox.getChildren().add(clearButton);
 
         // INIT THE HEADER ON THE RIGHT
+        startTime = new ComboBox(TAHours);
+        endTime = new ComboBox(TAHours);
         officeHoursHeaderBox = new HBox();
         String officeHoursGridText = props.getProperty(TAManagerProp.OFFICE_HOURS_SUBHEADER.toString());
         officeHoursHeaderLabel = new Label(officeHoursGridText);
+        starTimeLabel = new Label("start");
+        endTimeLabel = new Label("end");
+        starTimeLabel.setStyle("-fx-font-size:15pt");
+        endTimeLabel.setStyle("-fx-font-size:15pt");
+        filterButton = new Button("Filter");
         officeHoursHeaderBox.getChildren().add(officeHoursHeaderLabel);
+        officeHoursHeaderBox.getChildren().addAll(starTimeLabel,startTime,endTimeLabel,endTime,filterButton);     
         
         // THESE WILL STORE PANES AND LABELS FOR OUR OFFICE HOURS GRID
         officeHoursGridPane = new GridPane();
@@ -186,7 +252,12 @@ public class TAWorkspace extends AppWorkspaceComponent {
             controller.clearWorkspace();
             controller.clearOfficeHours();
             buttonToAddTA();
-            nameTextField.requestFocus();
+            nameTextField.setText("");
+            emailTextField.setText("");
+            nameTextField.requestFocus();         
+        });
+        filterButton.setOnAction(e->{
+            controller.updateHours();
         });
 
         taTable.setFocusTraversable(true);

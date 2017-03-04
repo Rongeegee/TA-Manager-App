@@ -149,6 +149,29 @@ public class TAController {
             
         }
     
+    public void updateHours(){
+       TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+       TAData data = (TAData)app.getDataComponent();
+       String startTime = workspace.startTime.getSelectionModel().getSelectedItem().toString(); 
+       String endTime = workspace.endTime.getSelectionModel().getSelectedItem().toString();
+       if(workspace.TAHours.indexOf(startTime) < workspace.TAHours.indexOf(endTime)){
+           String startHour = startTime.substring(0, startTime.indexOf(":"));
+           int startInt = Integer.parseInt(startHour); 
+           if(startTime.substring(startTime.length()- 2 ,startTime.length()).equals("pm")){
+               startInt += 12;
+           }
+           
+           String endHour = endTime.substring(0,endTime.indexOf(":"));
+           int endInt = Integer.parseInt(endHour);
+           if(endTime.substring(endTime.length()- 2 ,endTime.length()).equals("pm")){
+               endInt += 12;
+           }
+           data.setTimeFrame(startInt,endInt);
+           workspace.reloadOfficeHoursGrid(data);
+           
+       }
+    }
+    
     public void clearWorkspace(){
         TAData data = (TAData)app.getDataComponent();
         data.getTeachingAssistants().clear();         
