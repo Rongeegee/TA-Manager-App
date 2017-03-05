@@ -78,7 +78,6 @@ public class TAWorkspace extends AppWorkspaceComponent {
     HashMap<String, Label> officeHoursGridTimeCellLabels;
     HashMap<String, Pane> officeHoursGridTACellPanes;
     HashMap<String, Label> officeHoursGridTACellLabels;
-    HashMap<String, Pane> officeHoursGridFilterTACellPanes;
     HashMap<String, Label> officeHoursGridFilterTALabels;
     ComboBox startTime;
     ComboBox endTime;
@@ -217,7 +216,6 @@ public class TAWorkspace extends AppWorkspaceComponent {
         officeHoursGridTimeCellLabels = new HashMap();
         officeHoursGridTACellPanes = new HashMap();
         officeHoursGridTACellLabels = new HashMap();
-        officeHoursGridFilterTACellPanes = new HashMap();
         officeHoursGridFilterTALabels = new HashMap();
         
         // ORGANIZE THE LEFT AND RIGHT PANES
@@ -261,7 +259,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
             nameTextField.requestFocus();         
         });
         filterButton.setOnAction(e->{
-            controller.updateHours();
+          controller.filter();
         });
 
         taTable.setFocusTraversable(true);
@@ -283,22 +281,37 @@ public class TAWorkspace extends AppWorkspaceComponent {
             addButton.setText("Add TA");
     }
     
-     public void updateCellKey(){
-        TAData data = (TAData) app.getDataComponent();
-        officeHoursGridFilterTALabels.putAll(officeHoursGridTACellLabels);
-        for(int row = data.getStartHour(); row < data.getEndHour(); row++){
-            for(int column = 2; column < 7;column++){
-                int rowDifference = data.getStartHour() * 2;
-                int cellRow = row - rowDifference;
-                if(cellRow < 1){
-                    String cellkey = buildCellKey(column,row);
-                    officeHoursGridFilterTALabels.remove(cellkey);
-                }
-            }
-        }
-        
+    public int getStartRow(String starMiliTime){
+        String startMiliHour = starMiliTime.substring(0 ,starMiliTime.indexOf(":"));
+        int row = Integer.parseInt(startMiliHour) * 2 + 1;
+        if(starMiliTime.contains("30"))
+            row++;
+        return row;
     }
     
+    public int getEndRow(String endMiliTime){
+        String endMiliHour = endMiliTime.substring(0, endMiliTime.indexOf(":"));
+        int row = Integer.parseInt(endMiliHour) * 2 +1 ;
+        if(endMiliTime.contains("30"))
+            row++;
+        return row;
+    }
+    
+    public void filterHour(int startRow, int endRow){
+        TAData data = (TAData)app.getDataComponent();
+        officeHoursGridFilterTALabels.putAll(officeHoursGridTACellLabels);
+        for(String cellKey : officeHoursGridFilterTALabels.keySet()){
+             String row = cellKey.substring(cellKey.indexOf("_") + 1, cellKey.length());
+             int rowNumber = Integer.parseInt(row);
+             
+             if(rowNumber < startRow || rowNumber > endRow){
+                 //pay attention to this line, something may go wrong
+                 officeHoursGridFilterTALabels.get(cellKey).setText("");
+                 data.filterCell(cellKey);
+             }
+     
+        }
+    }
     
     // WE'LL PROVIDE AN ACCESSOR METHOD FOR EACH VISIBLE COMPONENT
     // IN CASE A CONTROLLER OR STYLE CLASS NEEDS TO CHANGE IT
@@ -428,6 +441,72 @@ public class TAWorkspace extends AppWorkspaceComponent {
         officeHoursGridTACellLabels.clear();
     }
     
+    public void filterOfficeHoursGrid(TAData dataComponent) {        
+        ArrayList<String> gridHeaders = dataComponent.getGridHeaders();
+
+        // ADD THE TIME HEADERS
+        for (int i = 0; i < 2; i++) {
+            addCellToGrid(dataComponent, officeHoursGridTimeHeaderPanes, officeHoursGridTimeHeaderLabels, i, 0);
+            dataComponent.getCellTextProperty(i, 0).set(gridHeaders.get(i));
+        }
+        
+        // THEN THE DAY OF WEEK HEADERS
+        for (int i = 2; i < 7; i++) {
+            addCellToGrid(dataComponent, officeHoursGridDayHeaderPanes, officeHoursGridDayHeaderLabels, i, 0);
+            dataComponent.getCellTextProperty(i, 0).set(gridHeaders.get(i));            
+        }
+        
+        // THEN THE TIME AND TA CELLS
+        int row = 1;
+        for (int i = dataComponent.getStartHour(); i < dataComponent.getEndHour(); i++) {
+            // START TIME COLUMN
+            int col = 0;
+            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row);
+            dataComponent.getCellTextProperty(col, row).set(buildCellText(i, "00"));
+            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row+1);
+            dataComponent.getCellTextProperty(col, row+1).set(buildCellText(i, "30"));
+
+            // END TIME COLUMN
+            col++;
+            int endHour = i;
+            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row);
+            dataComponent.getCellTextProperty(col, row).set(buildCellText(endHour, "30"));
+            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row+1);
+            dataComponent.getCellTextProperty(col, row+1).set(buildCellText(endHour+1, "00"));
+            col++;
+
+            // AND NOW ALL THE TA TOGGLE CELLS
+            while (col < 7) {
+                addCellToGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridFilterTALabels, col, row);
+                addCellToGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridFilterTALabels, col, row+1);
+                col++;
+            }
+            row += 2;
+        }
+
+        // CONTROLS FOR TOGGLING TA OFFICE HOURS
+        for (Pane p : officeHoursGridTACellPanes.values()) {
+            p.setFocusTraversable(true);
+            p.setOnKeyPressed(e -> {
+                controller.handleKeyPress(e.getCode());
+            });
+            p.setOnMouseClicked(e -> {
+                controller.handleCellToggle((Pane) e.getSource());
+            });
+            p.setOnMouseExited(e -> {
+                controller.handleGridCellMouseExited((Pane) e.getSource());
+            });
+            p.setOnMouseEntered(e -> {
+                controller.handleGridCellMouseEntered((Pane) e.getSource());
+            });
+        }
+        
+        // AND MAKE SURE ALL THE COMPONENTS HAVE THE PROPER STYLE
+        TAStyle taStyle = (TAStyle)app.getStyleComponent();
+        taStyle.initOfficeHoursGridStyle();
+    }
+    
+    
     @Override
     public void reloadWorkspace(AppDataComponent dataComponent) {
         TAData taData = (TAData)dataComponent;
@@ -498,72 +577,6 @@ public class TAWorkspace extends AppWorkspaceComponent {
         TAStyle taStyle = (TAStyle)app.getStyleComponent();
         taStyle.initOfficeHoursGridStyle();
     }
-    
-   public void filterOfficeHoursGrid(TAData dataComponent) {        
-        ArrayList<String> gridHeaders = dataComponent.getGridHeaders();
-
-        // ADD THE TIME HEADERS
-        for (int i = 0; i < 2; i++) {
-            addCellToGrid(dataComponent, officeHoursGridTimeHeaderPanes, officeHoursGridTimeHeaderLabels, i, 0);
-            dataComponent.getCellTextProperty(i, 0).set(gridHeaders.get(i));
-        }
-        
-        // THEN THE DAY OF WEEK HEADERS
-        for (int i = 2; i < 7; i++) {
-            addCellToGrid(dataComponent, officeHoursGridDayHeaderPanes, officeHoursGridDayHeaderLabels, i, 0);
-            dataComponent.getCellTextProperty(i, 0).set(gridHeaders.get(i));            
-        }
-        
-        // THEN THE TIME AND TA CELLS
-        int row = 1;
-        for (int i = dataComponent.getStartHour(); i < dataComponent.getEndHour(); i++) {
-            // START TIME COLUMN
-            int col = 0;
-            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row);
-            dataComponent.getCellTextProperty(col, row).set(buildCellText(i, "00"));
-            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row+1);
-            dataComponent.getCellTextProperty(col, row+1).set(buildCellText(i, "30"));
-
-            // END TIME COLUMN
-            col++;
-            int endHour = i;
-            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row);
-            dataComponent.getCellTextProperty(col, row).set(buildCellText(endHour, "30"));
-            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row+1);
-            dataComponent.getCellTextProperty(col, row+1).set(buildCellText(endHour+1, "00"));
-            col++;
-
-            // AND NOW ALL THE TA TOGGLE CELLS
-            while (col < 7) {
-                addCellToGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridFilterTALabels, col, row);
-                addCellToGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridFilterTALabels, col, row+1);
-                col++;
-            }
-            row += 2;
-        }
-
-        // CONTROLS FOR TOGGLING TA OFFICE HOURS
-        for (Pane p : officeHoursGridTACellPanes.values()) {
-            p.setFocusTraversable(true);
-            p.setOnKeyPressed(e -> {
-                controller.handleKeyPress(e.getCode());
-            });
-            p.setOnMouseClicked(e -> {
-                controller.handleCellToggle((Pane) e.getSource());
-            });
-            p.setOnMouseExited(e -> {
-                controller.handleGridCellMouseExited((Pane) e.getSource());
-            });
-            p.setOnMouseEntered(e -> {
-                controller.handleGridCellMouseEntered((Pane) e.getSource());
-            });
-        }
-        
-        // AND MAKE SURE ALL THE COMPONENTS HAVE THE PROPER STYLE
-        TAStyle taStyle = (TAStyle)app.getStyleComponent();
-        taStyle.initOfficeHoursGridStyle();
-    }
-    
     
     public void addCellToGrid(TAData dataComponent, HashMap<String, Pane> panes, HashMap<String, Label> labels, int col, int row) {       
         // MAKE THE LABEL IN A PANE

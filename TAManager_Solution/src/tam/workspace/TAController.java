@@ -157,71 +157,46 @@ public class TAController {
             
         }
     
-    public void updateHours(){
-       TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
-       TAData data = (TAData)app.getDataComponent();
-       String startTime = workspace.startTime.getSelectionModel().getSelectedItem().toString(); 
-       String endTime = workspace.endTime.getSelectionModel().getSelectedItem().toString();
-       if(workspace.TAHours.indexOf(startTime) < workspace.TAHours.indexOf(endTime)){
+    
+    public void filter(){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        TAData data = (TAData)app.getDataComponent();
+        String startTime = workspace.startTime.getSelectionModel().getSelectedItem().toString(); 
+        String endTime = workspace.endTime.getSelectionModel().getSelectedItem().toString();
+         if(workspace.TAHours.indexOf(startTime) < workspace.TAHours.indexOf(endTime)){
+           // get the starting row of the time frame  
            String startHour = startTime.substring(0, startTime.indexOf(":"));
-           int startInt = Integer.parseInt(startHour); 
-           if(startTime.substring(startTime.length()- 2 ,startTime.length()).equals("pm")){
-               startInt += 12;
-           }
-           String endHour = endTime.substring(0,endTime.indexOf(":"));
-           int endInt = Integer.parseInt(endHour);
-           if(endTime.substring(endTime.length()- 2 ,endTime.length()).equals("pm")){
-               endInt += 12;
-           }
-           data.setTimeFrame(startInt,endInt);
-           workspace.resetWorkspace();
-           //change the cellkey
-           workspace.updateCellKey();
-           workspace.filterOfficeHoursGrid(data);
+           int startHourInt = Integer.parseInt(startHour);
+           if(startTime.contains("pm"))
+               startHourInt += 12;
+           String startMiliTime = Integer.toString(startHourInt);
            
-       }
-       else{
-           Alert alert = new Alert(AlertType.INFORMATION);
-           alert.setTitle(null);
-           alert.setHeaderText(null);
-           alert.setContentText("Start Time must be before End Time");
-           alert.showAndWait();
-       }
-    }
-    /*public void updateHours(){
-       TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
-       TAData data = (TAData)app.getDataComponent();
-       TimeSlot timeSlot = (TimeSlot)app.getFileComponent();
-       String startTime = workspace.startTime.getSelectionModel().getSelectedItem().toString(); 
-       String endTime = workspace.endTime.getSelectionModel().getSelectedItem().toString();
-       if(workspace.TAHours.indexOf(startTime) < workspace.TAHours.indexOf(endTime)){
-           newTable = timeSlot.buildOfficeHoursList(data);
-           String startHour = startTime.substring(0, startTime.indexOf(":"));
-           int startInt = Integer.parseInt(startHour); 
-           if(startTime.substring(startTime.length()- 2 ,startTime.length()).equals("pm")){
-               startInt += 12;
-           }
-           String endHour = endTime.substring(0,endTime.indexOf(":"));
-           int endInt = Integer.parseInt(endHour);
-           if(endTime.substring(endTime.length()- 2 ,endTime.length()).equals("pm")){
-               endInt += 12;
-           }
-           data.setTimeFrame(startInt,endInt);
+           if (startTime.contains("30"))
+              startMiliTime = startMiliTime + ":" + "30";
+           else
+               startMiliTime = startMiliTime + ":" + "00";
+           int startRow = workspace.getStartRow(startMiliTime);
+           
+           //get the end row of the time frame
+           String endHour = endTime.substring(0, endTime.indexOf(":"));
+           int endHourInt = Integer.parseInt(endHour);
+           if (endTime.contains("pm"))
+               endHourInt += 12;
+           String endMiliTime = Integer.toString(endHourInt);
+           
+           if(endHour.contains("30"))
+               endMiliTime = endMiliTime + ":" + "30";
+           else
+               endMiliTime = endMiliTime + ":" + "00";
+           int endRow = workspace.getEndRow(endMiliTime);
+           
+           
+           workspace.filterHour(startRow, endRow);
            //workspace.resetWorkspace();
-           //change the cellkey
-           //workspace.updateCellKey();
-           workspace.reloadOfficeHoursGrid(data);
-           
-       }
-       else{
-           Alert alert = new Alert(AlertType.INFORMATION);
-           alert.setTitle(null);
-           alert.setHeaderText(null);
-           alert.setContentText("Start Time must be before End Time");
-           alert.showAndWait();
-       }
-    }*/
-  
+          // workspace.filterOfficeHoursGrid(data);
+         }
+    }
+   
     public void clearWorkspace(){
         TAData data = (TAData)app.getDataComponent();
         data.getTeachingAssistants().clear();         

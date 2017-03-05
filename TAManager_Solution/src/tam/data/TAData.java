@@ -288,6 +288,11 @@ public class TAData implements AppDataComponent {
         }
     }
     
+    public void filterCell(String cellKey){
+        StringProperty cellProp = officeHours.get(cellKey);
+        cellProp.setValue("");
+    }
+    
     /**
      * This method removes taName from the office grid cell
      * represented by cellProp.
