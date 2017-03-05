@@ -4,7 +4,10 @@ import djf.controller.AppFileController;
 import djf.ui.AppGUI;
 import static tam.TAManagerProp.*;
 import djf.ui.AppMessageDialogSingleton;
+import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -14,6 +17,7 @@ import properties_manager.PropertiesManager;
 import tam.TAManagerApp;
 import tam.data.TAData;
 import tam.data.TeachingAssistant;
+import tam.file.TimeSlot;
 import tam.style.TAStyle;
 import static tam.style.TAStyle.CLASS_HIGHLIGHTED_GRID_CELL;
 import static tam.style.TAStyle.CLASS_HIGHLIGHTED_GRID_ROW_OR_COLUMN;
@@ -32,6 +36,10 @@ public class TAController {
     // THE APP PROVIDES ACCESS TO OTHER COMPONENTS AS NEEDED
     TAManagerApp app;
 
+    
+    ArrayList<TimeSlot> newTable =  new ArrayList<TimeSlot>();
+    
+    
     /**
      * Constructor, note that the app must already be constructed.
      */
@@ -160,18 +168,60 @@ public class TAController {
            if(startTime.substring(startTime.length()- 2 ,startTime.length()).equals("pm")){
                startInt += 12;
            }
-           
            String endHour = endTime.substring(0,endTime.indexOf(":"));
            int endInt = Integer.parseInt(endHour);
            if(endTime.substring(endTime.length()- 2 ,endTime.length()).equals("pm")){
                endInt += 12;
            }
            data.setTimeFrame(startInt,endInt);
+           workspace.resetWorkspace();
+           //change the cellkey
+           workspace.updateCellKey();
+           workspace.filterOfficeHoursGrid(data);
+           
+       }
+       else{
+           Alert alert = new Alert(AlertType.INFORMATION);
+           alert.setTitle(null);
+           alert.setHeaderText(null);
+           alert.setContentText("Start Time must be before End Time");
+           alert.showAndWait();
+       }
+    }
+    /*public void updateHours(){
+       TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+       TAData data = (TAData)app.getDataComponent();
+       TimeSlot timeSlot = (TimeSlot)app.getFileComponent();
+       String startTime = workspace.startTime.getSelectionModel().getSelectedItem().toString(); 
+       String endTime = workspace.endTime.getSelectionModel().getSelectedItem().toString();
+       if(workspace.TAHours.indexOf(startTime) < workspace.TAHours.indexOf(endTime)){
+           newTable = timeSlot.buildOfficeHoursList(data);
+           String startHour = startTime.substring(0, startTime.indexOf(":"));
+           int startInt = Integer.parseInt(startHour); 
+           if(startTime.substring(startTime.length()- 2 ,startTime.length()).equals("pm")){
+               startInt += 12;
+           }
+           String endHour = endTime.substring(0,endTime.indexOf(":"));
+           int endInt = Integer.parseInt(endHour);
+           if(endTime.substring(endTime.length()- 2 ,endTime.length()).equals("pm")){
+               endInt += 12;
+           }
+           data.setTimeFrame(startInt,endInt);
+           //workspace.resetWorkspace();
+           //change the cellkey
+           //workspace.updateCellKey();
            workspace.reloadOfficeHoursGrid(data);
            
        }
-    }
-    
+       else{
+           Alert alert = new Alert(AlertType.INFORMATION);
+           alert.setTitle(null);
+           alert.setHeaderText(null);
+           alert.setContentText("Start Time must be before End Time");
+           alert.showAndWait();
+       }
+    }*/
+  
     public void clearWorkspace(){
         TAData data = (TAData)app.getDataComponent();
         data.getTeachingAssistants().clear();         
