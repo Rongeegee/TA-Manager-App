@@ -193,7 +193,10 @@ public class TAController {
            
            workspace.filterHour(startRow, endRow);
            //workspace.resetWorkspace();
-          // workspace.filterOfficeHoursGrid(data);
+           
+           data.setTimeFrame(startHourInt,endHourInt);
+        
+           workspace.reloadOfficeHoursGrid(data);         
          }
     }
    
