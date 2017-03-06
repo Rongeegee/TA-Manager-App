@@ -37,7 +37,7 @@ public class TAController {
     TAManagerApp app;
 
     
-    ArrayList<TimeSlot> newTable =  new ArrayList<TimeSlot>();
+    ArrayList<TimeSlot> newOfficeHour;
     
     
     /**
@@ -171,7 +171,7 @@ public class TAController {
                startHourInt += 12;
            String startMiliTime = Integer.toString(startHourInt);
            
-           if (startTime.contains("30"))
+            if (startTime.contains("30"))
               startMiliTime = startMiliTime + ":" + "30";
            else
                startMiliTime = startMiliTime + ":" + "00";
@@ -187,18 +187,108 @@ public class TAController {
            if(endHour.contains("30"))
                endMiliTime = endMiliTime + ":" + "30";
            else
-               endMiliTime = endMiliTime + ":" + "00";
+               endMiliTime = endMiliTime + ":" + "00"; 
            int endRow = workspace.getEndRow(endMiliTime);
            
            
-           workspace.filterHour(startRow, endRow);
-           //workspace.resetWorkspace();
+           workspace.setFilteredHour(startRow, endRow);
+           int rowDifference = startRow - 1;
+           
            
            data.setTimeFrame(startHourInt,endHourInt);
-        
-           workspace.reloadOfficeHoursGrid(data);         
+           workspace.resetWorkspace();
+           workspace.reloadOfficeHoursGrid(data);
+           
+           //now add TA from the old pane to the new pane
+           for(String cellKey : workspace.getFilteredHour().keySet()){
+               String column = cellKey.substring(0,cellKey.indexOf("_"));
+               String row = cellKey.substring(cellKey.indexOf("_") + 1, cellKey.length());
+               int cellRow = Integer.parseInt(row);
+               int newCellRow = cellRow - rowDifference;
+               String newRow =  Integer.toString(newCellRow);
+               String newCellKey = column + "_" + newRow;
+               String cellText = workspace.getFilteredHour().get(cellKey).getText();
+               data.addTAtoCell(newCellKey,cellText);               
+           }
+           
          }
     }
+       public void updateHours(){
+      TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+      TAData data = (TAData)app.getDataComponent();
+      String startTime = workspace.startTime.getSelectionModel().getSelectedItem().toString(); 
+       String endTime = workspace.endTime.getSelectionModel().getSelectedItem().toString();
+       if(workspace.TAHours.indexOf(startTime) < workspace.TAHours.indexOf(endTime)){
+           String startHour = startTime.substring(0, startTime.indexOf(":"));
+           int startInt = Integer.parseInt(startHour); 
+           if(startTime.substring(startTime.length()- 2 ,startTime.length()).equals("pm")){
+               startInt += 12;
+           }
+           
+           String endHour = endTime.substring(0,endTime.indexOf(":"));
+           int endInt = Integer.parseInt(endHour);
+           if(endTime.substring(endTime.length()- 2 ,endTime.length()).equals("pm")){
+               endInt += 12;
+           }
+           //startHour = Integer.toString(startInt);
+           //endHour = Integer.toString(endInt);
+           data.setTimeFrame(startInt,endInt);
+           //data.initHours(startHour,endHour);
+           workspace.resetWorkspace();
+           workspace.reloadWorkspace(data);   
+           markWorkAsEdited();
+           
+       }
+       }
+       
+       //method not working
+     public void updateOfficeHour(){
+         TAData data = (TAData)app.getDataComponent();
+         //data.getOfficeHours().remove(cellKey); i might need this line of code
+         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+         String startTime = workspace.startTime.getSelectionModel().getSelectedItem().toString(); 
+         String endTime = workspace.endTime.getSelectionModel().getSelectedItem().toString();
+         if(workspace.TAHours.indexOf(startTime) < workspace.TAHours.indexOf(endTime)){
+                      // get the starting row of the time frame  
+           String startHour = startTime.substring(0, startTime.indexOf(":"));
+           int startHourInt = Integer.parseInt(startHour);
+           if(startTime.contains("pm"))
+               startHourInt += 12;
+           String startMiliTime = Integer.toString(startHourInt);
+           
+           if (startTime.contains("30"))
+              startMiliTime = startMiliTime + ":" + "30";
+           else
+               startMiliTime = startMiliTime + ":" + "00";
+           int startRow = workspace.getStartRow(startMiliTime);
+           String firstRow = Integer.toString(startRow);
+           
+           //get the end row of the time frame
+           String endHour = endTime.substring(0, endTime.indexOf(":"));
+           int endHourInt = Integer.parseInt(endHour);
+           if (endTime.contains("pm"))
+               endHourInt += 12;
+           String endMiliTime = Integer.toString(endHourInt);
+           
+           if(endHour.contains("30"))
+               endMiliTime = endMiliTime + ":" + "30";
+           else
+               endMiliTime = endMiliTime + ":" + "00";
+           int endRow = workspace.getEndRow(endMiliTime);
+           String lastRow = Integer.toString(endRow);
+           
+           
+           for(String cellKey : data.getOfficeHours().keySet()){
+               String cellRow = cellKey.substring(cellKey.indexOf("_") + 1,cellKey.length());
+               int cell_row = Integer.parseInt(cellRow);
+               if(cell_row < startRow || cell_row > endRow){
+                   data.getOfficeHours().remove(cellKey);
+               }
+           }
+           workspace.resetWorkspace();
+           workspace.reloadWorkspace(data);
+         }
+     }
    
     public void clearWorkspace(){
         TAData data = (TAData)app.getDataComponent();

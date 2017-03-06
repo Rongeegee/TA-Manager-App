@@ -4,6 +4,7 @@ import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import tam.TAManagerApp;
 import javafx.collections.ObservableList;
@@ -297,20 +298,20 @@ public class TAWorkspace extends AppWorkspaceComponent {
         return row;
     }
     
-    public void filterHour(int startRow, int endRow){
-        TAData data = (TAData)app.getDataComponent();
-        officeHoursGridFilterTALabels.putAll(officeHoursGridTACellLabels);
-        for(String cellKey : officeHoursGridFilterTALabels.keySet()){
+    public void setFilteredHour(int startRow, int endRow){
+        
+        for(String cellKey : officeHoursGridTACellLabels.keySet()){
              String row = cellKey.substring(cellKey.indexOf("_") + 1, cellKey.length());
              int rowNumber = Integer.parseInt(row);
              
-             if(rowNumber < startRow || rowNumber > endRow){
-                 //pay attention to this line, something may go wrong
-                 officeHoursGridFilterTALabels.get(cellKey).setText("");
-                 data.filterCell(cellKey);
-             }
-     
+             if(rowNumber >= startRow && rowNumber <= endRow) 
+                officeHoursGridFilterTALabels.put(cellKey,officeHoursGridTACellLabels.get(cellKey));
         }
+       
+    }
+    
+    public HashMap<String, Label> getFilteredHour(){
+        return officeHoursGridFilterTALabels;
     }
     
     // WE'LL PROVIDE AN ACCESSOR METHOD FOR EACH VISIBLE COMPONENT
@@ -476,9 +477,10 @@ public class TAWorkspace extends AppWorkspaceComponent {
             col++;
 
             // AND NOW ALL THE TA TOGGLE CELLS
+            //problem right here, maybe the column and row
             while (col < 7) {
-                addCellToGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridFilterTALabels, col, row);
-                addCellToGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridFilterTALabels, col, row+1);
+                ChangecellInGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridTACellLabels, col, row);
+                ChangecellInGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridTACellLabels, col, row+1);
                 col++;
             }
             row += 2;
@@ -592,6 +594,31 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         // NOW PUT THE CELL IN THE WORKSPACE GRID
         officeHoursGridPane.add(cellPane, col, row);
+        
+        // AND ALSO KEEP IN IN CASE WE NEED TO STYLIZE IT
+        panes.put(cellKey, cellPane);
+        labels.put(cellKey, cellLabel);
+        
+        // AND FINALLY, GIVE THE TEXT PROPERTY TO THE DATA MANAGER
+        // SO IT CAN MANAGE ALL CHANGES
+        dataComponent.setCellProperty(col, row, cellLabel.textProperty());        
+    }
+    public void ChangecellInGrid(TAData dataComponent, HashMap<String, Pane> panes, HashMap<String, Label> labels, int col, int row) {       
+        // MAKE THE LABEL IN A PANE
+        Label cellLabel = new Label("");
+        HBox cellPane = new HBox();
+        cellPane.setAlignment(Pos.CENTER);
+        cellPane.getChildren().add(cellLabel);
+
+        // BUILD A KEY TO EASILY UNIQUELY IDENTIFY THE CELL
+        String cellKey = dataComponent.getCellKey(col, row);
+        cellPane.setId(cellKey);
+        cellLabel.setId(cellKey);
+        
+        
+        // NOW PUT THE CELL IN THE WORKSPACE GRID
+        officeHoursGridPane.add(cellPane, col, row);
+        
         
         // AND ALSO KEEP IN IN CASE WE NEED TO STYLIZE IT
         panes.put(cellKey, cellPane);
