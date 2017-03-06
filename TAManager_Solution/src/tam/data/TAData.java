@@ -86,6 +86,9 @@ public class TAData implements AppDataComponent {
         endHour = end;
     }
     
+    public void removeTAFromOfficeHour(String cellKey){
+        officeHours.remove(cellKey);
+    }
     
     /**
      * Called each time new work is created or loaded, it resets all data
@@ -288,10 +291,11 @@ public class TAData implements AppDataComponent {
         }
     }
     
-    public void filterCell(String cellKey){
+    public void addTAtoCell(String cellKey, String taNames){
         StringProperty cellProp = officeHours.get(cellKey);
-        cellProp.setValue("");
+        cellProp.setValue(taNames);
     }
+    
     
     /**
      * This method removes taName from the office grid cell
