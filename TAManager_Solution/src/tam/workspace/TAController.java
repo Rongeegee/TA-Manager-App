@@ -43,6 +43,7 @@ public class TAController {
     
     ArrayList<TimeSlot> newOfficeHour;
     boolean cont;
+    boolean firstLoad = false;
     
     /**
      * Constructor, note that the app must already be constructed.
@@ -163,32 +164,54 @@ public class TAController {
     
     
     public void filter(){
+        int startRow;
+        int endRow;
+        int startHourInt;
+        int endHourInt;
+                
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         TAData data = (TAData)app.getDataComponent();
         String startTime = workspace.startTime.getSelectionModel().getSelectedItem().toString(); 
         String endTime = workspace.endTime.getSelectionModel().getSelectedItem().toString();
          if(workspace.TAHours.indexOf(startTime) < workspace.TAHours.indexOf(endTime)){
+             
            // get the starting row of the time frame  
            String startHour = startTime.substring(0, startTime.indexOf(":"));
-           int startHourInt = Integer.parseInt(startHour);
+           startHourInt = Integer.parseInt(startHour);
+           if(startTime.equals("12:00am")){
+               startRow = 1;
+               startHourInt = 0;
+           }
+           else if(startTime.equals("12:00pm")){
+               startRow = 25;
+               startHourInt = 12;
+           }
+           else{
            if(startTime.contains("pm"))
                startHourInt += 12;
            String startMiliTime = Integer.toString(startHourInt);
            
            
            startMiliTime = startMiliTime + ":" + "00";
-           int startRow = workspace.getStartRow(startMiliTime);
+           startRow = workspace.getStartRow(startMiliTime);
+           }
            
            //get the end row of the time frame
+           if(endTime.equals("12:00pm")){
+               endRow = 25;
+               endHourInt = 12;
+           }
+           else{
            String endHour = endTime.substring(0, endTime.indexOf(":"));
-           int endHourInt = Integer.parseInt(endHour);
+           endHourInt = Integer.parseInt(endHour);
            if (endTime.contains("pm"))
                endHourInt += 12;
            String endMiliTime = Integer.toString(endHourInt);
            
            
            endMiliTime = endMiliTime + ":" + "00"; 
-           int endRow = workspace.getEndRow(endMiliTime);
+           endRow = workspace.getEndRow(endMiliTime);
+           }
            
            
            workspace.setFilteredHour(startRow, endRow);
@@ -196,6 +219,14 @@ public class TAController {
            
            
            data.setTimeFrame(startHourInt,endHourInt);
+           if(firstLoad == true){
+               data.setOfficeHoursCopy();
+           }
+           
+           else{
+               data.refeshOfficeHours();
+           }
+           
            //verify if the action will affect the current hour
            if(workspace.checkOfficeHourIsAfftected(startRow, endRow))
                 confirmation();
@@ -216,6 +247,7 @@ public class TAController {
                String cellText = workspace.getFilteredHour().get(cellKey).getText();
                data.addTAtoCell(newCellKey,cellText);               
            }  
+           alreadyload();
            markWorkAsEdited();
            }
          }
@@ -240,6 +272,10 @@ public class TAController {
         } else {
            cont = false;
         }
+     }
+     
+     public void alreadyload(){
+         firstLoad = false;
      }
      
     

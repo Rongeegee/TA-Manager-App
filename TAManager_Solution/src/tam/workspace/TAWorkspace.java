@@ -268,7 +268,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
     
     public int getEndRow(String endMiliTime){
         String endMiliHour = endMiliTime.substring(0, endMiliTime.indexOf(":"));
-        int row = Integer.parseInt(endMiliHour) * 2 +1 ;
+        int row = Integer.parseInt(endMiliHour) * 2 + 1 ;
         if(endMiliTime.contains("30"))
             row++;
         return row;

@@ -33,6 +33,7 @@ public class TAData implements AppDataComponent {
     // TO UI LABELS, WHICH MEANS IF WE CHANGE VALUES IN THESE
     // PROPERTIES IT CHANGES WHAT APPEARS IN THOSE LABELS
     HashMap<String, StringProperty> officeHours;
+    HashMap<String, StringProperty> officeHoursCopy;
     
     // THESE ARE THE LANGUAGE-DEPENDENT VALUES FOR
     // THE OFFICE HOURS GRID HEADERS. NOTE THAT WE
@@ -71,6 +72,7 @@ public class TAData implements AppDataComponent {
         
         //THIS WILL STORE OUR OFFICE HOURS
         officeHours = new HashMap();
+        officeHoursCopy = new HashMap();
         
         // THESE ARE THE LANGUAGE-DEPENDENT OFFICE HOURS GRID HEADERS
         PropertiesManager props = PropertiesManager.getPropertiesManager();
@@ -100,6 +102,14 @@ public class TAData implements AppDataComponent {
         endHour = MAX_END_HOUR;
         teachingAssistants.clear();
         officeHours.clear();
+    }
+    
+    public void setOfficeHoursCopy(){
+        officeHoursCopy.putAll(officeHours);
+    }
+    
+    public void refeshOfficeHours(){
+        officeHours.putAll(officeHoursCopy);
     }
     
     // ACCESSOR METHODS
