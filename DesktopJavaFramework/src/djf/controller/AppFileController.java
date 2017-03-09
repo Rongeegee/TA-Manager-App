@@ -227,11 +227,7 @@ public class AppFileController {
 	PropertiesManager props = PropertiesManager.getPropertiesManager();
         try {
 	    // MAYBE WE ALREADY KNOW THE FILE
-	    if (currentWorkFile != null) {
-		saveWork(currentWorkFile);
-	    }
-	    // OTHERWISE WE NEED TO PROMPT THE USER
-	    else {
+	    
 		// PROMPT THE USER FOR A FILE NAME
 		FileChooser fc = new FileChooser();
 		fc.setInitialDirectory(new File(PATH_WORK));
@@ -242,7 +238,7 @@ public class AppFileController {
 		File selectedFile = fc.showSaveDialog(app.getGUI().getWindow());
 		if (selectedFile != null) {
 		    saveWork(selectedFile);
-		}
+		
 	    }
         } catch (IOException ioe) {
 	    AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
