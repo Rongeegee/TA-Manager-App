@@ -51,6 +51,7 @@ public class AppGUI {
     protected Button newButton;
     protected Button loadButton;
     protected Button saveButton;
+    protected Button saveAsButton;
     protected Button exitButton;
     
     // THIS DIALOG IS USED FOR GIVING FEEDBACK TO THE USER
@@ -148,9 +149,11 @@ public class AppGUI {
         // START AS ENABLED (false), WHILE OTHERS DISABLED (true)
         newButton = initChildButton(fileToolbarPane,	NEW_ICON.toString(),	    NEW_TOOLTIP.toString(),	false);
         loadButton = initChildButton(fileToolbarPane,	LOAD_ICON.toString(),	    LOAD_TOOLTIP.toString(),	false);
+        saveAsButton = initChildButton(fileToolbarPane,	SAVE_AS_ICON.toString(),    SAVE_AS_TOOLTIP.toString(), false);
         saveButton = initChildButton(fileToolbarPane,	SAVE_ICON.toString(),	    SAVE_TOOLTIP.toString(),	true);
         exitButton = initChildButton(fileToolbarPane,	EXIT_ICON.toString(),	    EXIT_TOOLTIP.toString(),	false);
-
+        
+        
 	// AND NOW SETUP THEIR EVENT HANDLERS
         fileController = new AppFileController(app);
         newButton.setOnAction(e -> {
@@ -165,6 +168,9 @@ public class AppGUI {
         exitButton.setOnAction(e -> {
             fileController.handleExitRequest();
         });	
+        saveAsButton.setOnAction(e ->{
+            fileController.handleSaveAsRequest();
+        });
     }
 
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS
@@ -246,6 +252,8 @@ public class AppGUI {
 	newButton.getStyleClass().add(CLASS_FILE_BUTTON);
 	loadButton.getStyleClass().add(CLASS_FILE_BUTTON);
 	saveButton.getStyleClass().add(CLASS_FILE_BUTTON);
+        saveAsButton.getStyleClass().add(CLASS_FILE_BUTTON);
 	exitButton.getStyleClass().add(CLASS_FILE_BUTTON);
+        
     }
 }

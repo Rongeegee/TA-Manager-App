@@ -71,6 +71,8 @@ public class AppFileController {
         // LET THE UI KNOW
         gui.updateToolbarControls(saved);
     }
+    
+    
 
     /**
      * This method starts the process of editing new Work. If work is
@@ -201,6 +203,53 @@ public class AppFileController {
 	app.getGUI().updateToolbarControls(saved);	
     }
     
+    // HELPER METHOD FOR SAVING WORK
+    private void saveAs(File selectedFile) throws IOException {
+	// SAVE IT TO A FILE
+	app.getFileComponent().saveData(app.getDataComponent(), selectedFile.getPath());
+	
+	// MARK IT AS SAVED
+	currentWorkFile = selectedFile;
+	saved = true;
+	
+	// TELL THE USER THE FILE HAS BEEN SAVED
+	AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+	PropertiesManager props = PropertiesManager.getPropertiesManager();
+        dialog.show(props.getProperty(SAVE_COMPLETED_TITLE),props.getProperty(SAVE_COMPLETED_MESSAGE));
+		    
+	// AND REFRESH THE GUI, WHICH WILL ENABLE AND DISABLE
+	// THE APPROPRIATE CONTROLS
+	app.getGUI().updateToolbarControls(saved);	
+    }
+    
+    public void handleSaveAsRequest() {
+	// WE'LL NEED THIS TO GET CUSTOM STUFF
+	PropertiesManager props = PropertiesManager.getPropertiesManager();
+        try {
+	    // MAYBE WE ALREADY KNOW THE FILE
+	    if (currentWorkFile != null) {
+		saveWork(currentWorkFile);
+	    }
+	    // OTHERWISE WE NEED TO PROMPT THE USER
+	    else {
+		// PROMPT THE USER FOR A FILE NAME
+		FileChooser fc = new FileChooser();
+		fc.setInitialDirectory(new File(PATH_WORK));
+		fc.setTitle(props.getProperty(SAVE_WORK_TITLE));
+		fc.getExtensionFilters().addAll(
+		new ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), props.getProperty(WORK_FILE_EXT)));
+
+		File selectedFile = fc.showSaveDialog(app.getGUI().getWindow());
+		if (selectedFile != null) {
+		    saveWork(selectedFile);
+		}
+	    }
+        } catch (IOException ioe) {
+	    AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+	    dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
+        }
+    }
+    
     /**
      * This method will exit the application, making sure the user doesn't lose
      * any data first.
@@ -227,6 +276,7 @@ public class AppFileController {
         }
     }
 
+    
     /**
      * This helper method verifies that the user really wants to save their
      * unsaved work, which they might not want to do. Note that it could be used
