@@ -27,6 +27,8 @@ import static tam.style.TAStyle.CLASS_HIGHLIGHTED_GRID_CELL;
 import static tam.style.TAStyle.CLASS_HIGHLIGHTED_GRID_ROW_OR_COLUMN;
 import static tam.style.TAStyle.CLASS_OFFICE_HOURS_GRID_TA_CELL_PANE;
 import tam.workspace.TAWorkspace;
+import jtps.jTPS;
+import jtps.jTPS_Transaction;
 
 /**
  * This class provides responses to all workspace interactions, meaning
@@ -39,11 +41,13 @@ import tam.workspace.TAWorkspace;
 public class TAController {
     // THE APP PROVIDES ACCESS TO OTHER COMPONENTS AS NEEDED
     TAManagerApp app;
-
-    
+   
     ArrayList<TimeSlot> newOfficeHour;
     boolean cont;
-    boolean firstLoad = false;
+    boolean firstLoad = true;
+    
+   
+
     
     /**
      * Constructor, note that the app must already be constructed.
@@ -121,6 +125,8 @@ public class TAController {
             
             // WE'VE CHANGED STUFF
             markWorkAsEdited();
+        
+           
             }
         }
         }
@@ -213,19 +219,28 @@ public class TAController {
            endRow = workspace.getEndRow(endMiliTime);
            }
            
+           /*if(firstLoad == true){
+              data.setOriOfficeHoursCopy();
+           }
            
+           else{
+               data.refeshOfficeHours();
+           }*/
+           
+           /*if(firstLoad == true){
+               workspace.setOriTACellLabelsCopy();
+           }
+           else{
+               workspace.refreshGridTACellLabels();
+           }*/
+           
+           //workspace.getFilteredHour().clear();
            workspace.setFilteredHour(startRow, endRow);
            int rowDifference = startRow - 1;
            
            
            data.setTimeFrame(startHourInt,endHourInt);
-           if(firstLoad == true){
-               data.setOfficeHoursCopy();
-           }
            
-           else{
-               data.refeshOfficeHours();
-           }
            
            //verify if the action will affect the current hour
            if(workspace.checkOfficeHourIsAfftected(startRow, endRow))
@@ -237,6 +252,7 @@ public class TAController {
            workspace.reloadOfficeHoursGrid(data);
            
            //now add TA from the old pane to the new pane
+           //a logical and a bug in the for-loop
            for(String cellKey : workspace.getFilteredHour().keySet()){
                String column = cellKey.substring(0,cellKey.indexOf("_"));
                String row = cellKey.substring(cellKey.indexOf("_") + 1, cellKey.length());
@@ -258,6 +274,7 @@ public class TAController {
             alert.showAndWait();
          }    
     }
+    
     
      private void confirmation(){
        //AppYesNoCancelDialogSingleton.getSingleton();
@@ -324,7 +341,9 @@ public class TAController {
             }
                 
         }
+    
     }
+    
     
     public void updateButton(){
             TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
@@ -373,6 +392,7 @@ public class TAController {
                 String taName = ta.getName();
                 TAData data = (TAData)app.getDataComponent();
                 data.removeTA(taName);
+              
                 
                 // AND BE SURE TO REMOVE ALL THE TA'S OFFICE HOURS
                 HashMap<String, Label> labels = workspace.getOfficeHoursGridTACellLabels();
@@ -386,6 +406,11 @@ public class TAController {
                 // WE'VE CHANGED STUFF
                 markWorkAsEdited();
             }
+        }
+        
+        else if(code == KeyCode.A){
+            TAData data = (TAData)app.getDataComponent();
+            data.undo();
         }
     }
 

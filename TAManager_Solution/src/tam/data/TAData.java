@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import javafx.beans.property.StringProperty;
+import jtps.jTPS;
+import jtps.jTPS_Transaction;
 import properties_manager.PropertiesManager;
 import tam.TAManagerApp;
 import tam.TAManagerProp;
+import tam.workspace.AddTA_transaction;
 import tam.workspace.TAWorkspace;
 
 /**
@@ -20,13 +23,17 @@ import tam.workspace.TAWorkspace;
  * @author Richard McKenna
  */
 public class TAData implements AppDataComponent {
+    jTPS jTPS = new jTPS();
 
+    
     // WE'LL NEED ACCESS TO THE APP TO NOTIFY THE GUI WHEN DATA CHANGES
     TAManagerApp app;
+    
 
     // NOTE THAT THIS DATA STRUCTURE WILL DIRECTLY STORE THE
     // DATA IN THE ROWS OF THE TABLE VIEW
     ObservableList<TeachingAssistant> teachingAssistants;
+    // int indexOfLastAdded;
 
     // THIS WILL STORE ALL THE OFFICE HOURS GRID DATA, WHICH YOU
     // SHOULD NOTE ARE StringProperty OBJECTS THAT ARE CONNECTED
@@ -65,6 +72,7 @@ public class TAData implements AppDataComponent {
 
         // CONSTRUCT THE LIST OF TAs FOR THE TABLE
         teachingAssistants = FXCollections.observableArrayList();
+       
 
         // THESE ARE THE DEFAULT OFFICE HOURS
         startHour = MIN_START_HOUR;
@@ -104,7 +112,7 @@ public class TAData implements AppDataComponent {
         officeHours.clear();
     }
     
-    public void setOfficeHoursCopy(){
+    public void setOriOfficeHoursCopy(){
         officeHoursCopy.putAll(officeHours);
     }
     
@@ -260,16 +268,34 @@ public class TAData implements AppDataComponent {
 
         // SORT THE TAS
         Collections.sort(teachingAssistants);
+        jTPS_Transaction transaction = new AddTA_transaction(teachingAssistants,ta);
+        jTPS.addTransaction(transaction);
+        //int index = teachingAssistants.indexOf(ta);
+        //ta.setIndex(index);
+        //indexOfLastAdded = index;
+    }
+     
+    public void undo(){
+        jTPS.undoTransaction();
+    }
+    
+    public void redo(){
+        jTPS.doTransaction();
     }
 
     public void removeTA(String name) {
         for (TeachingAssistant ta : teachingAssistants) {
             if (name.equals(ta.getName())) {
                 teachingAssistants.remove(ta);
+                
                 return;
             }
         }
     }
+    
+ /*   public int getLastAddIndex(){
+        return indexOfLastAdded;
+    }*/
     
      
     

@@ -12,6 +12,7 @@ public class TeachingAssistant<E extends Comparable<E>> implements Comparable<E>
     // THE TABLE WILL STORE TA NAMES AND EMAILS
     private final StringProperty name;
     private final StringProperty email;
+    private int index;
 
     /**
      * Constructor initializes both the TA name and email.
@@ -20,6 +21,14 @@ public class TeachingAssistant<E extends Comparable<E>> implements Comparable<E>
         name = new SimpleStringProperty(initName);
         email = new SimpleStringProperty(initEmail);
     }
+    
+   /* public void setIndex(int num){
+        index = num;
+    }
+    
+    public int getIndex(){
+        return index;
+    }*/
 
     // ACCESSORS AND MUTATORS FOR THE PROPERTIES
 

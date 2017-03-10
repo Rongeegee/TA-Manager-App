@@ -30,6 +30,8 @@ import tam.style.TAStyle;
 import tam.data.TAData;
 import tam.data.TeachingAssistant;
 
+
+
 /**
  * This class serves as the workspace component for the TA Manager
  * application. It provides all the user interface controls in 
@@ -40,6 +42,8 @@ import tam.data.TeachingAssistant;
 public class TAWorkspace extends AppWorkspaceComponent {
     // THIS PROVIDES US WITH ACCESS TO THE APP COMPONENTS
     TAManagerApp app;
+    
+
 
     // THIS PROVIDES RESPONSES TO INTERACTIONS WITH THIS WORKSPACE
     TAController controller;
@@ -80,6 +84,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
     HashMap<String, Pane> officeHoursGridTACellPanes;
     HashMap<String, Label> officeHoursGridTACellLabels;
     HashMap<String, Label> officeHoursGridFilterTALabels;
+    HashMap<String, Label> originalTACellLabelsCopy;
     ComboBox startTime;
     ComboBox endTime;
     ObservableList<String> TAHours = 
@@ -194,6 +199,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         officeHoursGridTACellPanes = new HashMap();
         officeHoursGridTACellLabels = new HashMap();
         officeHoursGridFilterTALabels = new HashMap();
+        originalTACellLabelsCopy = new HashMap();
         
         // ORGANIZE THE LEFT AND RIGHT PANES
         VBox leftPane = new VBox();
@@ -243,6 +249,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         taTable.setOnKeyPressed(e -> {
             controller.handleKeyPress(e.getCode());
         });
+       
         taTable.setOnMouseClicked(e->{
         controller.updateButton();
         controller.updateTextField();
@@ -274,15 +281,41 @@ public class TAWorkspace extends AppWorkspaceComponent {
         return row;
     }
     
+    public void setOriTACellLabelsCopy(){
+        originalTACellLabelsCopy.putAll(officeHoursGridTACellLabels);
+    }
+    
+    public void refreshGridTACellLabels(){
+        officeHoursGridTACellLabels.putAll(originalTACellLabelsCopy);
+    }
+             
     public void setFilteredHour(int startRow, int endRow){
+        
         for(String cellKey : officeHoursGridTACellLabels.keySet()){
              String row = cellKey.substring(cellKey.indexOf("_") + 1, cellKey.length());
              int rowNumber = Integer.parseInt(row);
              
              if(rowNumber >= startRow && rowNumber <= endRow) 
                 officeHoursGridFilterTALabels.put(cellKey,officeHoursGridTACellLabels.get(cellKey));
+            
+             
         }
     }
+    
+     public void setFilteredHour2(int startRow, int endRow){
+         TAData data = (TAData)app.getDataComponent();
+         for(String cellKey : officeHoursGridTACellLabels.keySet()){
+             String row = cellKey.substring(cellKey.indexOf("_") + 1, cellKey.length());
+             int rowNumber = Integer.parseInt(row);
+             
+             if(rowNumber >= startRow && rowNumber <= endRow) 
+                officeHoursGridFilterTALabels.put(cellKey,officeHoursGridTACellLabels.get(cellKey));
+        
+         }
+         for(String cellKey : officeHoursGridFilterTALabels.keySet()){
+             data.addTAtoCell(cellKey,officeHoursGridFilterTALabels.get(cellKey).getText());
+         }
+     }
    
     public boolean checkOfficeHourIsAfftected(int startRow, int endRow){
          for(String cellKey : officeHoursGridTACellLabels.keySet()){
