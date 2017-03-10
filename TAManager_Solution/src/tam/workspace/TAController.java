@@ -412,6 +412,10 @@ public class TAController {
             TAData data = (TAData)app.getDataComponent();
             data.undo();
         }
+        else if(code == KeyCode.B){
+            TAData data = (TAData)app.getDataComponent();
+            data.redo();
+        }
     }
 
     /**

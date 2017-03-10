@@ -264,6 +264,7 @@ public class TAData implements AppDataComponent {
         // ADD THE TA
         if (!containsTA(initName, initEmail)) {
             teachingAssistants.add(ta);
+            ta.setNewAdded();
         }
 
         // SORT THE TAS

@@ -59,7 +59,8 @@ public class AddTA_transaction implements jTPS_Transaction{
 
     @Override
     public void doTransaction() {
-        teachingAssistants.add(TA);
+        if(!teachingAssistants.contains(TA) && TA.isNewAdded())
+         teachingAssistants.add(TA);
     }
 
     @Override
