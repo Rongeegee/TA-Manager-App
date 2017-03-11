@@ -14,6 +14,7 @@ import tam.TAManagerApp;
 import tam.TAManagerProp;
 import tam.workspace.AddTA_transaction;
 import tam.workspace.TAWorkspace;
+import tam.workspace.removeTA_transaction;
 
 /**
  * This is the data component for TAManagerApp. It has all the data needed
@@ -24,7 +25,7 @@ import tam.workspace.TAWorkspace;
  */
 public class TAData implements AppDataComponent {
     jTPS jTPS = new jTPS();
-
+    jTPS jTPS2 = new jTPS();
     
     // WE'LL NEED ACCESS TO THE APP TO NOTIFY THE GUI WHEN DATA CHANGES
     TAManagerApp app;
@@ -276,7 +277,7 @@ public class TAData implements AppDataComponent {
         //ta.setIndex(index);
         //indexOfLastAdded = index;
     }
-    public void enterTA(TeachingAssistant ta1) {
+    /*public void enterTA(TeachingAssistant ta1) {
         // MAKE THE TA
        
 
@@ -295,7 +296,7 @@ public class TAData implements AppDataComponent {
         //int index = teachingAssistants.indexOf(ta);
         //ta.setIndex(index);
         //indexOfLastAdded = index;
-    } 
+    } */
      
     public void undo(){
         jTPS.undoTransaction();
@@ -309,10 +310,19 @@ public class TAData implements AppDataComponent {
         for (TeachingAssistant ta : teachingAssistants) {
             if (name.equals(ta.getName())) {
                 teachingAssistants.remove(ta);
-                
+                jTPS_Transaction transaction = new removeTA_transaction(teachingAssistants,ta);
+                jTPS2.addTransaction(transaction);
                 return;
             }
         }
+    }
+    
+    public void undoRemoval(){
+        jTPS2.undoTransaction();
+    }
+    
+    public void redoRemoval(){
+        jTPS2.doTransaction();
     }
     
  /*   public int getLastAddIndex(){

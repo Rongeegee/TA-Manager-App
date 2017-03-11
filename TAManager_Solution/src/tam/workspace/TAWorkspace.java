@@ -2,6 +2,7 @@ package tam.workspace;
 
 import djf.components.AppDataComponent;
 import djf.components.AppWorkspaceComponent;
+import static java.awt.event.KeyEvent.VK_Z;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.beans.property.StringProperty;
@@ -19,6 +20,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -248,8 +250,16 @@ public class TAWorkspace extends AppWorkspaceComponent {
         taTable.setFocusTraversable(true);
         taTable.setOnKeyPressed(e -> {
             controller.handleKeyPress(e.getCode());
+            if(e.isControlDown() && e.getCode() == KeyCode.Z){
+                data.undo();
+                data.undoRemoval();
+            }
+            else if(e.isControlDown() && e.getCode() == KeyCode.Y){   
+                data.redo();
+                data.redoRemoval();
+            }
         });
-       
+        
         taTable.setOnMouseClicked(e->{
         controller.updateButton();
         controller.updateTextField();

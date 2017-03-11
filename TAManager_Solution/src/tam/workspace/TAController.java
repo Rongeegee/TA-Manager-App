@@ -404,20 +404,13 @@ public class TAController {
                         data.removeTAFromCell(label.textProperty(), taName);
                     }
                 }
+                
                 // WE'VE CHANGED STUFF
                 markWorkAsEdited();
             }
         }
-        
-        else if(code == KeyCode.A){
-            TAData data = (TAData)app.getDataComponent();
-            data.undo();
-        }
-        else if(code == KeyCode.B){
-            TAData data = (TAData)app.getDataComponent();
-            data.redo();
-        }
     }
+
 
     /**
      * This function provides a response for when the user clicks
