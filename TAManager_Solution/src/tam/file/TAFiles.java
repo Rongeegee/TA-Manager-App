@@ -8,7 +8,11 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import djf.components.AppDataComponent;
 import djf.components.AppFileComponent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -45,6 +49,9 @@ public class TAFiles implements AppFileComponent {
     static final String JSON_NAME = "name";
     static final String JSON_UNDERGRAD_TAS = "undergrad_tas";
     static final String JSON_EMAIL = "email";
+    
+    
+    
     
     public TAFiles(TAManagerApp initApp) {
         app = initApp;
@@ -163,4 +170,47 @@ public class TAFiles implements AppFileComponent {
     public void exportData(AppDataComponent data, String filePath) throws IOException {
         
     }
+    
+    /*public void exportData(){
+        
+    }*/
+    
+    /*private void makeFolder(String location, String folderName){
+        String folderLocation;
+        //if the file location end with "/"
+        if(location.lastIndexOf("/") == location.length() - 1)
+            folderLocation = location + folderName;
+        else
+            folderLocation = location + "/" + folderName;
+        File folder = new File(folderLocation);
+
+        // if the directory does not exist, create it
+        if (!folder.exists()) {
+        System.out.println("creating directory: " + folder.getName());
+        folder.mkdir();
+
+     }
+    }
+    
+    private void copyFile(String oldFilePath, String newFilepath){
+      FileInputStream ins = null;
+      FileOutputStream outs = null;
+      try {
+         File newFile =new File(oldFilePath);
+         File oldFile =new File(newFilepath);
+         ins = new FileInputStream(newFile);
+         outs = new FileOutputStream(oldFile);
+         byte[] buffer = new byte[1024];
+         int length;
+         
+         while ((length = ins.read(buffer)) > 0) {
+            outs.write(buffer, 0, length);
+         } 
+         ins.close();
+         outs.close();
+         System.out.println("File copied successfully!!");
+      } catch(IOException ioe) {
+         ioe.printStackTrace();
+      } 
+    }*/
 }

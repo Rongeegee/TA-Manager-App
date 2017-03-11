@@ -1,0 +1,17 @@
+
+{
+    "startHour":"0",
+    "endHour":"24",
+    "undergrad_tas":[
+        {
+            "name":"dsa",
+            "email":"fsa@fsa.com"
+        },
+        {
+            "name":"fsadsa",
+            "email":"fsa@dsa.jaq"
+        }
+    ],
+    "officeHours":[
+    ]
+}

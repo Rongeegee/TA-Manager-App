@@ -115,7 +115,8 @@ public class TAController {
             {
             // ADD THE NEW TA TO THE DATA
             data.addTA(name, email);
-            
+            //TeachingAssistant tas = new TeachingAssistant(name, email);
+            //data.enterTA(tas);
             // CLEAR THE TEXT FIELDS
             nameTextField.setText("");
             emailTextField.setText("");

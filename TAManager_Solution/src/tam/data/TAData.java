@@ -264,17 +264,38 @@ public class TAData implements AppDataComponent {
         // ADD THE TA
         if (!containsTA(initName, initEmail)) {
             teachingAssistants.add(ta);
-            ta.setNewAdded();
         }
+
 
         // SORT THE TAS
         Collections.sort(teachingAssistants);
         jTPS_Transaction transaction = new AddTA_transaction(teachingAssistants,ta);
         jTPS.addTransaction(transaction);
+        
         //int index = teachingAssistants.indexOf(ta);
         //ta.setIndex(index);
         //indexOfLastAdded = index;
     }
+    public void enterTA(TeachingAssistant ta1) {
+        // MAKE THE TA
+       
+
+        // ADD THE TA
+        if (!teachingAssistants.contains(ta1)) {
+            teachingAssistants.add(ta1);
+            Collections.sort(teachingAssistants);
+            jTPS_Transaction transaction = new AddTA_transaction(teachingAssistants,ta1);
+            jTPS.addTransaction(transaction);
+        }
+
+
+        // SORT THE TAS
+        
+        
+        //int index = teachingAssistants.indexOf(ta);
+        //ta.setIndex(index);
+        //indexOfLastAdded = index;
+    } 
      
     public void undo(){
         jTPS.undoTransaction();
