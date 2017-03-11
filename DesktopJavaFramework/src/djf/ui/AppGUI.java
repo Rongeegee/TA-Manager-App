@@ -20,6 +20,9 @@ import static djf.settings.AppStartupConstants.PATH_IMAGES;
 import djf.components.AppStyleComponent;
 import static djf.components.AppStyleComponent.CLASS_BORDERED_PANE;
 import static djf.components.AppStyleComponent.CLASS_FILE_BUTTON;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class provides the basic user interface for this application,
@@ -53,6 +56,7 @@ public class AppGUI {
     protected Button saveButton;
     protected Button saveAsButton;
     protected Button exitButton;
+    protected Button exportButton;
     
     // THIS DIALOG IS USED FOR GIVING FEEDBACK TO THE USER
     protected AppYesNoCancelDialogSingleton yesNoCancelDialog;
@@ -151,8 +155,9 @@ public class AppGUI {
         loadButton = initChildButton(fileToolbarPane,	LOAD_ICON.toString(),	    LOAD_TOOLTIP.toString(),	false);
         saveAsButton = initChildButton(fileToolbarPane,	SAVE_AS_ICON.toString(),    SAVE_AS_TOOLTIP.toString(), false);
         saveButton = initChildButton(fileToolbarPane,	SAVE_ICON.toString(),	    SAVE_TOOLTIP.toString(),	true);
+        exportButton = initChildButton(fileToolbarPane,  EXPORT_ICON.toString(),  EXPORT_TOOLTIP.toString(), false);
         exitButton = initChildButton(fileToolbarPane,	EXIT_ICON.toString(),	    EXIT_TOOLTIP.toString(),	false);
-        
+ 
         
 	// AND NOW SETUP THEIR EVENT HANDLERS
         fileController = new AppFileController(app);
@@ -167,9 +172,13 @@ public class AppGUI {
         });
         exitButton.setOnAction(e -> {
             fileController.handleExitRequest();
-        });	
-        saveAsButton.setOnAction(e ->{
-            fileController.handleSaveAsRequest();
+        });	  
+        exportButton.setOnAction(e ->{
+            try {
+                fileController.handleExportRequest();
+            } catch (IOException ex) {
+                Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
     }
 

@@ -27,6 +27,10 @@ import static djf.settings.AppPropertyType.SAVE_UNSAVED_WORK_MESSAGE;
 import static djf.settings.AppPropertyType.SAVE_UNSAVED_WORK_TITLE;
 import static djf.settings.AppPropertyType.SAVE_WORK_TITLE;
 import static djf.settings.AppStartupConstants.PATH_WORK;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import javafx.stage.DirectoryChooser;
+import org.apache.commons.io.FileUtils;
 
 /**
  * This class provides the event programmed responses for the file controls
@@ -227,7 +231,6 @@ public class AppFileController {
 	PropertiesManager props = PropertiesManager.getPropertiesManager();
         try {
 	    // MAYBE WE ALREADY KNOW THE FILE
-	    
 		// PROMPT THE USER FOR A FILE NAME
 		FileChooser fc = new FileChooser();
 		fc.setInitialDirectory(new File(PATH_WORK));
@@ -237,13 +240,98 @@ public class AppFileController {
 
 		File selectedFile = fc.showSaveDialog(app.getGUI().getWindow());
 		if (selectedFile != null) {
-		    saveWork(selectedFile);
-		
+		    saveAs(selectedFile);
+   		
 	    }
         } catch (IOException ioe) {
 	    AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
 	    dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
         }
+    }
+    
+    public void handleExportRequest() throws IOException{
+        // WE'LL NEED THIS TO GET CUSTOM STUFF
+	PropertiesManager props = PropertiesManager.getPropertiesManager();
+	    // MAYBE WE ALREADY KNOW THE FILE
+	    
+		// PROMPT THE USER FOR A FILE NAME
+		DirectoryChooser dc = new DirectoryChooser();
+		dc.setInitialDirectory(new File(PATH_WORK));
+		dc.setTitle(props.getProperty("export your work"));
+		
+
+		File selectedPath = dc.showDialog(app.getGUI().getWindow());
+                File public_HTML = new File("../TAManagerTester/public_html");
+                export(public_HTML, selectedPath);
+                File replaced_officeHourGrid = new File(selectedPath.getAbsolutePath() +"/js/OfficeHoursGridData.json");
+		override(currentWorkFile,replaced_officeHourGrid);
+        }
+    
+    
+    private static void export(File source, File Destination) throws IOException{
+        FileUtils.copyDirectory(source, Destination);
+    }
+    
+    public static void override(File source, File Destination) throws IOException{
+        FileUtils.copyFile(source, Destination);
+    }
+    //FileUtils.copyDirectoy(src, dest);
+    //FileUtil.copyFile(src,dest);
+    //
+    public void trasnfer(String targetFilePath) throws IOException{
+        //path of public_html
+        String dest_path = getProjectPath() + "\\..\\TAManagerTester\\public_html";
+        //make the three folder in the destinated path
+        makeFolder(targetFilePath,"css");
+        makeFolder(targetFilePath,"images");
+        makeFolder(targetFilePath,"js");
+        
+        copyFile(dest_path + "\\syllabus.html",targetFilePath );
+    }
+    
+     private void makeFolder(String location, String folderName){
+        String folderLocation;
+        //if the file location end with "/"
+        if(location.lastIndexOf("/") == location.length() - 1)
+            folderLocation = location + folderName;
+        else
+            folderLocation = location + "/" + folderName;
+        File folder = new File(folderLocation);
+
+        // if the directory does not exist, create it
+        if (!folder.exists()) {
+        System.out.println("creating directory: " + folder.getName());
+        folder.mkdir();
+
+     }
+    }
+    
+    private void copyFile(String oldFilePath, String newFilepath){
+      FileInputStream ins = null;
+      FileOutputStream outs = null;
+      try {
+         File newFile =new File(oldFilePath);
+         File oldFile =new File(newFilepath);
+         ins = new FileInputStream(newFile);
+         outs = new FileOutputStream(oldFile);
+         byte[] buffer = new byte[1024];
+         int length;
+         
+         while ((length = ins.read(buffer)) > 0) {
+            outs.write(buffer, 0, length);
+         } 
+         ins.close();
+         outs.close();
+      } catch(IOException ioe) {
+         ioe.printStackTrace();
+      } 
+    }
+    
+    public String getProjectPath() throws IOException{
+        String currentDirectory;
+	File file = new File(".");
+        currentDirectory = file.getCanonicalPath();   
+	return currentDirectory;
     }
     
     /**

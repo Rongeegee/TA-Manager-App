@@ -24,6 +24,7 @@ public enum AppPropertyType {
     SAVE_ICON,
     SAVE_AS_ICON,
     EXIT_ICON,
+    EXPORT_ICON,
         
     // FILE TOOLBAR TOOLTIPS FOR BUTTONS
     NEW_TOOLTIP,
