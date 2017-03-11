@@ -264,7 +264,7 @@ public class AppFileController {
                 File public_HTML = new File("../TAManagerTester/public_html");
                 export(public_HTML, selectedPath);
                 File replaced_officeHourGrid = new File(selectedPath.getAbsolutePath() +"/js/OfficeHoursGridData.json");
-		override(currentWorkFile,replaced_officeHourGrid);
+		replaceOfficeHourGrid(currentWorkFile,replaced_officeHourGrid);
         }
     
     
@@ -272,7 +272,7 @@ public class AppFileController {
         FileUtils.copyDirectory(source, Destination);
     }
     
-    public static void override(File source, File Destination) throws IOException{
+    public static void replaceOfficeHourGrid(File source, File Destination) throws IOException{
         FileUtils.copyFile(source, Destination);
     }
     //FileUtils.copyDirectoy(src, dest);
