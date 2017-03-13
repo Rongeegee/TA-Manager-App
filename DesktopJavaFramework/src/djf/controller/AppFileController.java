@@ -268,16 +268,14 @@ public class AppFileController {
         }
     
     
-    private static void export(File source, File Destination) throws IOException{
+    public static void export(File source, File Destination) throws IOException{
         FileUtils.copyDirectory(source, Destination);
     }
     
     public static void replaceOfficeHourGrid(File source, File Destination) throws IOException{
         FileUtils.copyFile(source, Destination);
     }
-    //FileUtils.copyDirectoy(src, dest);
-    //FileUtil.copyFile(src,dest);
-    //
+ 
     public void trasnfer(String targetFilePath) throws IOException{
         //path of public_html
         String dest_path = getProjectPath() + "\\..\\TAManagerTester\\public_html";
