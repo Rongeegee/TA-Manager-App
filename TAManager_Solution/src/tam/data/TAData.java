@@ -16,6 +16,7 @@ import tam.workspace.AddTA_transaction;
 import tam.workspace.TAWorkspace;
 import tam.workspace.addTAToGrid_transaction;
 import tam.workspace.removeTA_transaction;
+import tam.workspace.removeTAfromGrid_transaction;
 
 /**
  * This is the data component for TAManagerApp. It has all the data needed
@@ -26,8 +27,7 @@ import tam.workspace.removeTA_transaction;
  */
 public class TAData implements AppDataComponent {
     static jTPS jTPS = new jTPS();
-//    static jTPS jTPS2 = new jTPS();
-//    static jTPS jTPS3 = new jTPS();
+
     
     // WE'LL NEED ACCESS TO THE APP TO NOTIFY THE GUI WHEN DATA CHANGES
     TAManagerApp app;
@@ -272,33 +272,11 @@ public class TAData implements AppDataComponent {
 
         // SORT THE TAS
         Collections.sort(teachingAssistants);
-        jTPS_Transaction transaction = new AddTA_transaction(teachingAssistants,ta);
-        jTPS.addTransaction(transaction);
+        jTPS_Transaction AddTATransaction = new AddTA_transaction(teachingAssistants,ta);
+        jTPS.addTransaction(AddTATransaction);
         
-        //int index = teachingAssistants.indexOf(ta);
-        //ta.setIndex(index);
-        //indexOfLastAdded = index;
     }
-    /*public void enterTA(TeachingAssistant ta1) {
-        // MAKE THE TA
-       
-
-        // ADD THE TA
-        if (!teachingAssistants.contains(ta1)) {
-            teachingAssistants.add(ta1);
-            Collections.sort(teachingAssistants);
-            jTPS_Transaction transaction = new AddTA_transaction(teachingAssistants,ta1);
-            jTPS.addTransaction(transaction);
-        }
-
-
-        // SORT THE TAS
-        
-        
-        //int index = teachingAssistants.indexOf(ta);
-        //ta.setIndex(index);
-        //indexOfLastAdded = index;
-    } */
+    
      
     public void undo(){
         jTPS.undoTransaction();
@@ -312,24 +290,13 @@ public class TAData implements AppDataComponent {
         for (TeachingAssistant ta : teachingAssistants) {
             if (name.equals(ta.getName())) {
                 teachingAssistants.remove(ta);
-                jTPS_Transaction transaction2 = new removeTA_transaction(teachingAssistants,ta);
-                jTPS.addTransaction(transaction2);
+                jTPS_Transaction removeTATransaction = new removeTA_transaction(teachingAssistants,ta);
+                jTPS.addTransaction(removeTATransaction);
                 return;
             }
         }
     }
-    
-    /*public void undoRemoval(){
-        jTPS2.undoTransaction();
-    }
-    
-    public void redoRemoval(){
-        jTPS2.doTransaction();
-    }*/
-    
- /*   public int getLastAddIndex(){
-        return indexOfLastAdded;
-    }*/
+
     
      
     
@@ -365,9 +332,13 @@ public class TAData implements AppDataComponent {
         }
         
         if (isAdded){
-        jTPS_Transaction transaction3 = new addTAToGrid_transaction(cellKey,taName,officeHours);
-        jTPS.addTransaction(transaction3);
-        }    
+        jTPS_Transaction addTAtoGridTransaction = new addTAToGrid_transaction(cellKey,taName,officeHours);
+        jTPS.addTransaction(addTAtoGridTransaction);
+        }
+        else if(!isAdded){
+        jTPS_Transaction removeTAtoGridTransaction = new removeTAfromGrid_transaction(cellKey,taName,officeHours);
+        jTPS.addTransaction(removeTAtoGridTransaction);
+        }
     }
     
    /* public void undoGridAdding(){

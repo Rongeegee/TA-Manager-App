@@ -13,12 +13,12 @@ import jtps.jTPS_Transaction;
  *
  * @author Rongan
  */
-public class addTAToGrid_transaction implements jTPS_Transaction  {
+public class removeTAfromGrid_transaction implements jTPS_Transaction{
     HashMap<String, StringProperty> officeHours;
     String cellKey;
     String taName;
     
-    public addTAToGrid_transaction(String cellKey, String taName,HashMap<String, StringProperty> officeHours){
+    public removeTAfromGrid_transaction(String cellKey, String taName, HashMap<String, StringProperty> officeHours){
         this.cellKey = cellKey;
         this.taName = taName;
         this.officeHours = officeHours;
@@ -26,19 +26,16 @@ public class addTAToGrid_transaction implements jTPS_Transaction  {
     
     @Override
     public void doTransaction() {
-        StringProperty cellProp = officeHours.get(cellKey);
-        String cellText = cellProp.getValue();
-        
-        if(!cellText.contains(taName)){
-            if (cellText.length() == 0) {
-            cellProp.setValue(taName);
-        } else {
-            cellProp.setValue(cellText + "\n" + taName);
-            }
-        }
+       StringProperty cellProp = officeHours.get(cellKey);
+       String cellText = cellProp.getValue();
+
+        // IF IT ALREADY HAS THE TA, REMOVE IT
+        if (cellText.contains(taName)) {
+            removeTAFromCell(cellProp, taName);
+        } 
     }
     
-     private void removeTAFromCell(StringProperty cellProp, String taName) {
+    private void removeTAFromCell(StringProperty cellProp, String taName) {
         // GET THE CELL TEXT
         String cellText = cellProp.getValue();
         // IS IT THE ONLY TA IN THE CELL?
@@ -70,11 +67,14 @@ public class addTAToGrid_transaction implements jTPS_Transaction  {
     public void undoTransaction() {
         StringProperty cellProp = officeHours.get(cellKey);
         String cellText = cellProp.getValue();
-
-        // IF IT ALREADY HAS THE TA, REMOVE IT
-        if (cellText.contains(taName)) {
-            removeTAFromCell(cellProp, taName);
-        } 
+        
+        if(!cellText.contains(taName)){
+            if (cellText.length() == 0) {
+            cellProp.setValue(taName);
+        } else {
+            cellProp.setValue(cellText + "\n" + taName);
+            }
+        }
     }
     
 }
