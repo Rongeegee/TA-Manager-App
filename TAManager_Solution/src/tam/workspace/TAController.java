@@ -42,7 +42,6 @@ public class TAController {
     // THE APP PROVIDES ACCESS TO OTHER COMPONENTS AS NEEDED
     TAManagerApp app;
    
-    ArrayList<TimeSlot> newOfficeHour;
     boolean cont;
     boolean firstLoad = true;
     
@@ -404,7 +403,7 @@ public class TAController {
                         data.removeTAFromCell(label.textProperty(), taName);
                     }
                 }
-                
+  
                 // WE'VE CHANGED STUFF
                 markWorkAsEdited();
             }

@@ -250,16 +250,29 @@ public class TAWorkspace extends AppWorkspaceComponent {
         taTable.setFocusTraversable(true);
         taTable.setOnKeyPressed(e -> {
             controller.handleKeyPress(e.getCode());
-            if(e.isControlDown() && e.getCode() == KeyCode.Z){
+            /*if(e.isControlDown() && e.getCode() == KeyCode.Z){
                 data.undo();
                 data.undoRemoval();
+                data.undoGridAdding();
             }
             else if(e.isControlDown() && e.getCode() == KeyCode.Y){   
                 data.redo();
                 data.redoRemoval();
+                data.redoGridAdding();
+            }*/
+        });
+        workspace.setOnKeyPressed(e->{
+            if(e.isControlDown() && e.getCode() == KeyCode.Z){
+                data.undo();
+//                data.undoRemoval();
+//                data.undoGridAdding();
+            }
+            else if(e.isControlDown() && e.getCode() == KeyCode.Y){   
+                data.redo();
+//                data.redoRemoval();
+//                data.redoGridAdding();
             }
         });
-        
         taTable.setOnMouseClicked(e->{
         controller.updateButton();
         controller.updateTextField();
@@ -473,73 +486,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         officeHoursGridTACellLabels.clear();
     }
     
-    public void filterOfficeHoursGrid(TAData dataComponent) {        
-        ArrayList<String> gridHeaders = dataComponent.getGridHeaders();
 
-        // ADD THE TIME HEADERS
-        for (int i = 0; i < 2; i++) {
-            addCellToGrid(dataComponent, officeHoursGridTimeHeaderPanes, officeHoursGridTimeHeaderLabels, i, 0);
-            dataComponent.getCellTextProperty(i, 0).set(gridHeaders.get(i));
-        }
-        
-        // THEN THE DAY OF WEEK HEADERS
-        for (int i = 2; i < 7; i++) {
-            addCellToGrid(dataComponent, officeHoursGridDayHeaderPanes, officeHoursGridDayHeaderLabels, i, 0);
-            dataComponent.getCellTextProperty(i, 0).set(gridHeaders.get(i));            
-        }
-        
-        // THEN THE TIME AND TA CELLS
-        int row = 1;
-        for (int i = dataComponent.getStartHour(); i < dataComponent.getEndHour(); i++) {
-            // START TIME COLUMN
-            int col = 0;
-            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row);
-            dataComponent.getCellTextProperty(col, row).set(buildCellText(i, "00"));
-            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row+1);
-            dataComponent.getCellTextProperty(col, row+1).set(buildCellText(i, "30"));
-
-            // END TIME COLUMN
-            col++;
-            int endHour = i;
-            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row);
-            dataComponent.getCellTextProperty(col, row).set(buildCellText(endHour, "30"));
-            addCellToGrid(dataComponent, officeHoursGridTimeCellPanes, officeHoursGridTimeCellLabels, col, row+1);
-            dataComponent.getCellTextProperty(col, row+1).set(buildCellText(endHour+1, "00"));
-            col++;
-
-            // AND NOW ALL THE TA TOGGLE CELLS
-            //problem right here, maybe the column and row
-            while (col < 7) {
-                ChangecellInGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridTACellLabels, col, row);
-                ChangecellInGrid(dataComponent, officeHoursGridTACellPanes, officeHoursGridTACellLabels, col, row+1);
-                col++;
-            }
-            row += 2;
-        }
-
-        // CONTROLS FOR TOGGLING TA OFFICE HOURS
-        for (Pane p : officeHoursGridTACellPanes.values()) {
-            p.setFocusTraversable(true);
-            p.setOnKeyPressed(e -> {
-                controller.handleKeyPress(e.getCode());
-            });
-            p.setOnMouseClicked(e -> {
-                controller.handleCellToggle((Pane) e.getSource());
-            });
-            p.setOnMouseExited(e -> {
-                controller.handleGridCellMouseExited((Pane) e.getSource());
-            });
-            p.setOnMouseEntered(e -> {
-                controller.handleGridCellMouseEntered((Pane) e.getSource());
-            });
-        }
-        
-        // AND MAKE SURE ALL THE COMPONENTS HAVE THE PROPER STYLE
-        TAStyle taStyle = (TAStyle)app.getStyleComponent();
-        taStyle.initOfficeHoursGridStyle();
-    }
-    
-    
     @Override
     public void reloadWorkspace(AppDataComponent dataComponent) {
         TAData taData = (TAData)dataComponent;

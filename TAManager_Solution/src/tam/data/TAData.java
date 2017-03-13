@@ -14,6 +14,7 @@ import tam.TAManagerApp;
 import tam.TAManagerProp;
 import tam.workspace.AddTA_transaction;
 import tam.workspace.TAWorkspace;
+import tam.workspace.addTAToGrid_transaction;
 import tam.workspace.removeTA_transaction;
 
 /**
@@ -24,8 +25,9 @@ import tam.workspace.removeTA_transaction;
  * @author Richard McKenna
  */
 public class TAData implements AppDataComponent {
-    jTPS jTPS = new jTPS();
-    jTPS jTPS2 = new jTPS();
+    static jTPS jTPS = new jTPS();
+//    static jTPS jTPS2 = new jTPS();
+//    static jTPS jTPS3 = new jTPS();
     
     // WE'LL NEED ACCESS TO THE APP TO NOTIFY THE GUI WHEN DATA CHANGES
     TAManagerApp app;
@@ -310,20 +312,20 @@ public class TAData implements AppDataComponent {
         for (TeachingAssistant ta : teachingAssistants) {
             if (name.equals(ta.getName())) {
                 teachingAssistants.remove(ta);
-                jTPS_Transaction transaction = new removeTA_transaction(teachingAssistants,ta);
-                jTPS2.addTransaction(transaction);
+                jTPS_Transaction transaction2 = new removeTA_transaction(teachingAssistants,ta);
+                jTPS.addTransaction(transaction2);
                 return;
             }
         }
     }
     
-    public void undoRemoval(){
+    /*public void undoRemoval(){
         jTPS2.undoTransaction();
     }
     
     public void redoRemoval(){
         jTPS2.doTransaction();
-    }
+    }*/
     
  /*   public int getLastAddIndex(){
         return indexOfLastAdded;
@@ -347,18 +349,34 @@ public class TAData implements AppDataComponent {
     public void toggleTAOfficeHours(String cellKey, String taName) {
         StringProperty cellProp = officeHours.get(cellKey);
         String cellText = cellProp.getValue();
-
+        boolean isAdded = false;
+  
         // IF IT ALREADY HAS THE TA, REMOVE IT
         if (cellText.contains(taName)) {
             removeTAFromCell(cellProp, taName);
         } // OTHERWISE ADD IT
         else if (cellText.length() == 0) {
             cellProp.setValue(taName);
-        } else {
+            isAdded = true;
+        } 
+        else {
             cellProp.setValue(cellText + "\n" + taName);
+            isAdded = true;
         }
+        
+        if (isAdded){
+        jTPS_Transaction transaction3 = new addTAToGrid_transaction(cellKey,taName,officeHours);
+        jTPS.addTransaction(transaction3);
+        }    
     }
     
+   /* public void undoGridAdding(){
+        jTPS3.undoTransaction();
+    }
+    
+    public void redoGridAdding(){
+        jTPS3.doTransaction();
+    }*/
     public void addTAtoCell(String cellKey, String taNames){
         StringProperty cellProp = officeHours.get(cellKey);
         cellProp.setValue(taNames);
