@@ -44,10 +44,7 @@ public class TAController {
    
     boolean cont;
     boolean firstLoad = true;
-    
    
-
-    
     /**
      * Constructor, note that the app must already be constructed.
      */
@@ -151,16 +148,20 @@ public class TAController {
             else{
             // IS A TA SELECTED IN THE TABLE?
             Object selectedItem = taTable.getSelectionModel().getSelectedItem();
-            if (selectedItem != null) {
+            if (selectedItem != null) {       
                  TeachingAssistant ta = (TeachingAssistant)selectedItem;
                  String oldName = ta.getName();
                  ta.setName(name);
                  String newName = ta.getName();
+                 String oldEmail = ta.getEmail();
                  ta.setEmail(email);
                  updateCellPane(newName,oldName);
                  nameTextField.setText("");
                  emailTextField.setText("");
                  workspace.addButton.setText("Add TA");
+                jTPS_Transaction updateTA_transaction = new updateTA_transaction(ta,workspace.addButton,
+                "Update TA", "Add TA",oldName,newName,oldEmail,email,workspace);
+                data.getJTPS().addTransaction(updateTA_transaction);
                  markWorkAsEdited();
             }
             }

@@ -285,6 +285,10 @@ public class TAData implements AppDataComponent {
     public void redo(){
         jTPS.doTransaction();
     }
+    
+    public jTPS getJTPS(){
+        return jTPS;
+    }
 
     public void removeTA(String name) {
         for (TeachingAssistant ta : teachingAssistants) {
@@ -341,13 +345,6 @@ public class TAData implements AppDataComponent {
         }
     }
     
-   /* public void undoGridAdding(){
-        jTPS3.undoTransaction();
-    }
-    
-    public void redoGridAdding(){
-        jTPS3.doTransaction();
-    }*/
     public void addTAtoCell(String cellKey, String taNames){
         StringProperty cellProp = officeHours.get(cellKey);
         cellProp.setValue(taNames);

@@ -250,27 +250,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
         taTable.setFocusTraversable(true);
         taTable.setOnKeyPressed(e -> {
             controller.handleKeyPress(e.getCode());
-            /*if(e.isControlDown() && e.getCode() == KeyCode.Z){
-                data.undo();
-                data.undoRemoval();
-                data.undoGridAdding();
-            }
-            else if(e.isControlDown() && e.getCode() == KeyCode.Y){   
-                data.redo();
-                data.redoRemoval();
-                data.redoGridAdding();
-            }*/
         });
         workspace.setOnKeyPressed(e->{
             if(e.isControlDown() && e.getCode() == KeyCode.Z){
                 data.undo();
-//                data.undoRemoval();
-//                data.undoGridAdding();
             }
             else if(e.isControlDown() && e.getCode() == KeyCode.Y){   
                 data.redo();
-//                data.redoRemoval();
-//                data.redoGridAdding();
             }
         });
         taTable.setOnMouseClicked(e->{
