@@ -27,7 +27,7 @@ import tam.workspace.removeTAfromGrid_transaction;
  */
 public class TAData implements AppDataComponent {
     static jTPS jTPS = new jTPS();
-
+    
     
     // WE'LL NEED ACCESS TO THE APP TO NOTIFY THE GUI WHEN DATA CHANGES
     TAManagerApp app;
@@ -75,7 +75,7 @@ public class TAData implements AppDataComponent {
 
         // CONSTRUCT THE LIST OF TAs FOR THE TABLE
         teachingAssistants = FXCollections.observableArrayList();
-       
+        
 
         // THESE ARE THE DEFAULT OFFICE HOURS
         startHour = MIN_START_HOUR;
@@ -291,10 +291,12 @@ public class TAData implements AppDataComponent {
     }
 
     public void removeTA(String name) {
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         for (TeachingAssistant ta : teachingAssistants) {
             if (name.equals(ta.getName())) {
                 teachingAssistants.remove(ta);
-                jTPS_Transaction removeTATransaction = new removeTA_transaction(teachingAssistants,ta);
+                jTPS_Transaction removeTATransaction = new removeTA_transaction(teachingAssistants,ta,workspace,
+                this,officeHours);
                 jTPS.addTransaction(removeTATransaction);
                 return;
             }

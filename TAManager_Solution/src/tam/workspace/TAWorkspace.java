@@ -305,26 +305,10 @@ public class TAWorkspace extends AppWorkspaceComponent {
              int rowNumber = Integer.parseInt(row);
              
              if(rowNumber >= startRow && rowNumber <= endRow) 
-                officeHoursGridFilterTALabels.put(cellKey,officeHoursGridTACellLabels.get(cellKey));
-            
-             
+                officeHoursGridFilterTALabels.put(cellKey,officeHoursGridTACellLabels.get(cellKey));     
         }
     }
     
-     public void setFilteredHour2(int startRow, int endRow){
-         TAData data = (TAData)app.getDataComponent();
-         for(String cellKey : officeHoursGridTACellLabels.keySet()){
-             String row = cellKey.substring(cellKey.indexOf("_") + 1, cellKey.length());
-             int rowNumber = Integer.parseInt(row);
-             
-             if(rowNumber >= startRow && rowNumber <= endRow) 
-                officeHoursGridFilterTALabels.put(cellKey,officeHoursGridTACellLabels.get(cellKey));
-        
-         }
-         for(String cellKey : officeHoursGridFilterTALabels.keySet()){
-             data.addTAtoCell(cellKey,officeHoursGridFilterTALabels.get(cellKey).getText());
-         }
-     }
    
     public boolean checkOfficeHourIsAfftected(int startRow, int endRow){
          for(String cellKey : officeHoursGridTACellLabels.keySet()){
