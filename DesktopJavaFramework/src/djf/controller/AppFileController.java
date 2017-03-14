@@ -251,6 +251,7 @@ public class AppFileController {
     
     public void handleExportRequest() throws IOException{
         // WE'LL NEED THIS TO GET CUSTOM STUFF
+        if(saved){
 	PropertiesManager props = PropertiesManager.getPropertiesManager();
 	    // MAYBE WE ALREADY KNOW THE FILE
 	    
@@ -264,8 +265,9 @@ public class AppFileController {
                 File public_HTML = new File("../TAManagerTester/public_html");
                 export(public_HTML, selectedPath);
                 File replaced_officeHourGrid = new File(selectedPath.getAbsolutePath() +"/js/OfficeHoursGridData.json");
-		replaceOfficeHourGrid(currentWorkFile,replaced_officeHourGrid);
+                replaceOfficeHourGrid(currentWorkFile,replaced_officeHourGrid);
         }
+    }
     
     
     public static void export(File source, File Destination) throws IOException{
@@ -276,62 +278,6 @@ public class AppFileController {
         FileUtils.copyFile(source, Destination);
     }
  
-    public void trasnfer(String targetFilePath) throws IOException{
-        //path of public_html
-        String dest_path = getProjectPath() + "\\..\\TAManagerTester\\public_html";
-        //make the three folder in the destinated path
-        makeFolder(targetFilePath,"css");
-        makeFolder(targetFilePath,"images");
-        makeFolder(targetFilePath,"js");
-        
-        copyFile(dest_path + "\\syllabus.html",targetFilePath );
-    }
-    
-     private void makeFolder(String location, String folderName){
-        String folderLocation;
-        //if the file location end with "/"
-        if(location.lastIndexOf("/") == location.length() - 1)
-            folderLocation = location + folderName;
-        else
-            folderLocation = location + "/" + folderName;
-        File folder = new File(folderLocation);
-
-        // if the directory does not exist, create it
-        if (!folder.exists()) {
-        System.out.println("creating directory: " + folder.getName());
-        folder.mkdir();
-
-     }
-    }
-    
-    private void copyFile(String oldFilePath, String newFilepath){
-      FileInputStream ins = null;
-      FileOutputStream outs = null;
-      try {
-         File newFile =new File(oldFilePath);
-         File oldFile =new File(newFilepath);
-         ins = new FileInputStream(newFile);
-         outs = new FileOutputStream(oldFile);
-         byte[] buffer = new byte[1024];
-         int length;
-         
-         while ((length = ins.read(buffer)) > 0) {
-            outs.write(buffer, 0, length);
-         } 
-         ins.close();
-         outs.close();
-      } catch(IOException ioe) {
-         ioe.printStackTrace();
-      } 
-    }
-    
-    public String getProjectPath() throws IOException{
-        String currentDirectory;
-	File file = new File(".");
-        currentDirectory = file.getCanonicalPath();   
-	return currentDirectory;
-    }
-    
     /**
      * This method will exit the application, making sure the user doesn't lose
      * any data first.

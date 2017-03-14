@@ -133,6 +133,7 @@ public class AppGUI {
 	newButton.setDisable(false);
         loadButton.setDisable(false);
 	exitButton.setDisable(false);
+        exportButton.setDisable(!saved);
 
         // NOTE THAT THE NEW, LOAD, AND EXIT BUTTONS
         // ARE NEVER DISABLED SO WE NEVER HAVE TO TOUCH THEM
@@ -155,7 +156,7 @@ public class AppGUI {
         loadButton = initChildButton(fileToolbarPane,	LOAD_ICON.toString(),	    LOAD_TOOLTIP.toString(),	false);
         saveAsButton = initChildButton(fileToolbarPane,	SAVE_AS_ICON.toString(),    SAVE_AS_TOOLTIP.toString(), false);
         saveButton = initChildButton(fileToolbarPane,	SAVE_ICON.toString(),	    SAVE_TOOLTIP.toString(),	true);
-        exportButton = initChildButton(fileToolbarPane,  EXPORT_ICON.toString(),  EXPORT_TOOLTIP.toString(), false);
+        exportButton = initChildButton(fileToolbarPane,  EXPORT_ICON.toString(),  EXPORT_TOOLTIP.toString(), true);
         exitButton = initChildButton(fileToolbarPane,	EXIT_ICON.toString(),	    EXIT_TOOLTIP.toString(),	false);
  
         
