@@ -349,7 +349,13 @@ public class TAData implements AppDataComponent {
     
     public void addTAtoCell(String cellKey, String taNames){
         StringProperty cellProp = officeHours.get(cellKey);
-        cellProp.setValue(taNames);
+        String cellText = cellProp.getValue();
+        if (cellText.length() == 0) {
+            cellProp.setValue(taNames);
+        }
+        else{
+            cellProp.setValue(cellText + "\n" + taNames);
+        }
     }
     
     

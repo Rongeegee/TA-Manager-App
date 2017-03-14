@@ -86,7 +86,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
     HashMap<String, Pane> officeHoursGridTACellPanes;
     HashMap<String, Label> officeHoursGridTACellLabels;
     HashMap<String, Label> officeHoursGridFilterTALabels;
-    HashMap<String, Label> originalTACellLabelsCopy;
+    HashMap<String, Label> officeHoursGridUnFilterTALabels;
     ComboBox startTime;
     ComboBox endTime;
     ObservableList<String> TAHours = 
@@ -201,7 +201,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
         officeHoursGridTACellPanes = new HashMap();
         officeHoursGridTACellLabels = new HashMap();
         officeHoursGridFilterTALabels = new HashMap();
-        originalTACellLabelsCopy = new HashMap();
+        officeHoursGridUnFilterTALabels = new HashMap();
+       
         
         // ORGANIZE THE LEFT AND RIGHT PANES
         VBox leftPane = new VBox();
@@ -284,20 +285,23 @@ public class TAWorkspace extends AppWorkspaceComponent {
     
     public int getEndRow(String endMiliTime){
         String endMiliHour = endMiliTime.substring(0, endMiliTime.indexOf(":"));
-        int row = Integer.parseInt(endMiliHour) * 2 + 1 ;
+        int row = Integer.parseInt(endMiliHour) * 2;
         if(endMiliTime.contains("30"))
             row++;
         return row;
     }
     
-    public void setOriTACellLabelsCopy(){
-        originalTACellLabelsCopy.putAll(officeHoursGridTACellLabels);
+    public HashMap<String,Label> getOfficeHoursGridUnFilterTALabels(){
+        return officeHoursGridUnFilterTALabels;
     }
     
-    public void refreshGridTACellLabels(){
-        officeHoursGridTACellLabels.putAll(originalTACellLabelsCopy);
+    public void resetOfficeHoursGridTACellLabels(){
+        officeHoursGridTACellLabels.clear();
+        officeHoursGridTACellLabels.putAll(officeHoursGridFilterTALabels);
+        officeHoursGridTACellLabels.putAll(officeHoursGridUnFilterTALabels);
     }
-             
+    
+    
     public void setFilteredHour(int startRow, int endRow){
         
         for(String cellKey : officeHoursGridTACellLabels.keySet()){
@@ -305,7 +309,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
              int rowNumber = Integer.parseInt(row);
              
              if(rowNumber >= startRow && rowNumber <= endRow) 
-                officeHoursGridFilterTALabels.put(cellKey,officeHoursGridTACellLabels.get(cellKey));     
+                officeHoursGridFilterTALabels.put(cellKey,officeHoursGridTACellLabels.get(cellKey));  
+             else
+                 officeHoursGridUnFilterTALabels.put(cellKey,officeHoursGridTACellLabels.get(cellKey));
         }
     }
     

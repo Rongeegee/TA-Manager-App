@@ -43,7 +43,6 @@ public class TAController {
     TAManagerApp app;
    
     boolean cont;
-    boolean firstLoad = true;
    
     /**
      * Constructor, note that the app must already be constructed.
@@ -178,10 +177,16 @@ public class TAController {
                 
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         TAData data = (TAData)app.getDataComponent();
+        if(workspace.startTime.getSelectionModel().getSelectedItem() != null &&
+                workspace.endTime.getSelectionModel().getSelectedItem() != null){
         String startTime = workspace.startTime.getSelectionModel().getSelectedItem().toString(); 
         String endTime = workspace.endTime.getSelectionModel().getSelectedItem().toString();
          if(workspace.TAHours.indexOf(startTime) < workspace.TAHours.indexOf(endTime)){
-             
+           
+           //get the current start Hour and end Hour
+           int oldStartHourInt = data.getStartHour();
+           int oldEndHourInt = data.getEndHour();
+           
            // get the starting row of the time frame  
            String startHour = startTime.substring(0, startTime.indexOf(":"));
            startHourInt = Integer.parseInt(startHour);
@@ -219,23 +224,7 @@ public class TAController {
            endMiliTime = endMiliTime + ":" + "00"; 
            endRow = workspace.getEndRow(endMiliTime);
            }
-           
-           /*if(firstLoad == true){
-              data.setOriOfficeHoursCopy();
-           }
-           
-           else{
-               data.refeshOfficeHours();
-           }*/
-           
-           /*if(firstLoad == true){
-               workspace.setOriTACellLabelsCopy();
-           }
-           else{
-               workspace.refreshGridTACellLabels();
-           }*/
-           
-           //workspace.getFilteredHour().clear();
+   
            workspace.setFilteredHour(startRow, endRow);
            int rowDifference = startRow - 1;
            
@@ -263,18 +252,25 @@ public class TAController {
                String newCellKey = column + "_" + newRow;
                String cellText = workspace.getFilteredHour().get(cellKey).getText();
                data.addTAtoCell(newCellKey,cellText);               
-           }  
-           alreadyload();
+           }    
+           workspace.resetOfficeHoursGridTACellLabels();
+         
+           jTPS_Transaction filterTA_transaction = new filterOfficeHours_transaction(data,workspace,app,startTime,
+           endTime,oldStartHourInt,oldEndHourInt);
+           data.getJTPS().addTransaction(filterTA_transaction);
            markWorkAsEdited();
            }
          }
+        
          else{
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setHeaderText(null);
             alert.setContentText("Start Time must be earlier than end time.");
             alert.showAndWait();
-         }    
+         }
+        }
     }
+
     
     
      private void confirmation(){
@@ -292,9 +288,7 @@ public class TAController {
         }
      }
      
-     public void alreadyload(){
-         firstLoad = false;
-     }
+     
      
     
     public void clearWorkspace(){
